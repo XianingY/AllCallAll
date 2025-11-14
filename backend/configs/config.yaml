@@ -1,0 +1,44 @@
+server:
+  # HTTP 服务监听地址
+  # HTTP server listen address
+  host: "0.0.0.0"
+  port: 8080
+  read_timeout_seconds: 10
+  write_timeout_seconds: 15
+  idle_timeout_seconds: 60
+
+database:
+  # MySQL 连接参数 (DSN)
+  # MySQL connection settings
+  dsn: "allcall:allcallpass@tcp(mysql:3306)/allcall?parseTime=true&charset=utf8mb4&loc=Local"
+  max_open_conns: 25
+  max_idle_conns: 10
+  conn_max_lifetime_minutes: 30
+
+redis:
+  # Redis 连接信息
+  # Redis connection settings
+  addr: "redis:6379"
+  username: ""
+  password: ""
+  db: 0
+
+jwt:
+  # JWT 签发密钥 (部署时务必替换)
+  # JWT signing secret (replace in production)
+  secret: "please_change_me"
+  issuer: "allcall-backend"
+  access_token_ttl_minutes: 60
+  refresh_token_ttl_hours: 168
+
+webrtc:
+  # ICE 服务器配置
+  # ICE servers used by WebRTC peers
+  ice_servers:
+    - urls:
+        - "stun:stun.l.google.com:19302"
+
+logging:
+  # 日志等级: debug | info | warn | error
+  # Logging level
+  level: "info"

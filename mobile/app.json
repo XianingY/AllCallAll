@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "AllCall",
+    "slug": "allcall",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.allcall.mobile",
+      "permissions": [
+        "INTERNET",
+        "RECORD_AUDIO",
+        "MODIFY_AUDIO_SETTINGS",
+        "CAMERA",
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_CONNECT"
+      ]
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.allcall.mobile",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Allow AllCall to access the microphone for voice calls"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

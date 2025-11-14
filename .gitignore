@@ -1,0 +1,34 @@
+# MacOS
+.DS_Store
+
+# IDE
+.qoder/
+.vscode/
+.idea/
+
+# Backend Go
+backend/.gocache/
+backend/.gomodcache/
+backend/.gopath/
+backend/server
+
+# Mobile
+mobile/node_modules/
+mobile/.expo/
+mobile/dist/
+mobile/.expo-shared/
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/react-settings-plugin/.gradle/
+mobile/android/react-settings-plugin/build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local

@@ -1,0 +1,134 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/allcall/backend/internal/auth"
+	"github.com/allcall/backend/internal/cache"
+	"github.com/allcall/backend/internal/config"
+	"github.com/allcall/backend/internal/contact"
+	"github.com/allcall/backend/internal/database"
+	"github.com/allcall/backend/internal/handlers"
+	"github.com/allcall/backend/internal/logger"
+	"github.com/allcall/backend/internal/models"
+	"github.com/allcall/backend/internal/presence"
+	"github.com/allcall/backend/internal/server"
+	"github.com/allcall/backend/internal/signaling"
+	"github.com/allcall/backend/internal/user"
+)
+
+// main 入口
+// main entry point
+func main() {
+	cfg, err := config.Load()
+	if err != nil {
+		panic(fmt.Sprintf("failed to load config: %v", err))
+	}
+
+	appLogger := logger.New(cfg.Logging.Level)
+
+	mode := os.Getenv("GIN_MODE")
+	if mode == "" {
+		mode = gin.ReleaseMode
+	}
+	gin.SetMode(mode)
+
+	engine := server.NewEngine(appLogger)
+
+	// 健康检查接口
+	engine.GET("/ping", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{"message": "pong"})
+	})
+
+	db, err := database.NewMySQL(cfg.Database, appLogger)
+	if err != nil {
+		appLogger.Fatal().Err(err).Msg("failed to connect mysql")
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		appLogger.Fatal().Err(err).Msg("failed to obtain mysql sql.DB")
+	}
+	defer sqlDB.Close()
+	appLogger.Info().Msg("mysql connection established")
+
+	if err := db.AutoMigrate(&models.User{}, &models.Contact{}); err != nil {
+		appLogger.Fatal().Err(err).Msg("auto migrate failed")
+	}
+
+	rootCtx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+
+	redisClient, err := cache.NewRedis(rootCtx, cfg.Redis, appLogger)
+	if err != nil {
+		appLogger.Fatal().Err(err).Msg("failed to connect redis")
+	}
+	defer func() {
+		if err := redisClient.Close(); err != nil {
+			appLogger.Warn().Err(err).Msg("redis client close with error")
+		}
+	}()
+
+	userRepo := user.NewRepository(db)
+	userSvc := user.NewService(userRepo)
+	contactRepo := contact.NewRepository(db)
+	contactSvc := contact.NewService(contactRepo, userSvc)
+
+	jwtManager, err := auth.NewManager(auth.Config{
+		Secret:          cfg.JWT.Secret,
+		Issuer:          cfg.JWT.Issuer,
+		AccessTokenTTL:  time.Duration(cfg.JWT.AccessTokenTTLMin) * time.Minute,
+		RefreshTokenTTL: time.Duration(cfg.JWT.RefreshTokenTTLHrs) * time.Hour,
+	})
+	if err != nil {
+		appLogger.Fatal().Err(err).Msg("failed to initialize jwt manager")
+	}
+
+	authHandler := handlers.NewAuthHandler(appLogger, userSvc, jwtManager)
+	presenceManager := presence.NewManager(redisClient, appLogger, userSvc)
+
+	userHandler := handlers.NewUserHandler(appLogger, userSvc, presenceManager, contactSvc)
+	signalingHub := signaling.NewHub(redisClient, appLogger, presenceManager)
+	signalingHandler := handlers.NewSignalingHandler(appLogger, signalingHub)
+
+	server.RegisterRoutes(engine, server.RouteDependencies{
+		AuthHandler:      authHandler,
+		UserHandler:      userHandler,
+		SignalingHandler: signalingHandler,
+		AuthMiddleware:   auth.Middleware(jwtManager),
+	})
+
+	httpServer := &http.Server{
+		Addr:         fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port),
+		Handler:      engine,
+		ReadTimeout:  time.Duration(cfg.Server.ReadTimeoutSec) * time.Second,
+		WriteTimeout: time.Duration(cfg.Server.WriteTimeoutSec) * time.Second,
+		IdleTimeout:  time.Duration(cfg.Server.IdleTimeoutSec) * time.Second,
+	}
+
+	go func() {
+		appLogger.Info().Str("addr", httpServer.Addr).Msg("http server starting")
+		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			appLogger.Fatal().Err(err).Msg("http server failed")
+		}
+	}()
+
+	<-rootCtx.Done()
+	appLogger.Info().Msg("shutdown signal received")
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+
+	if err := httpServer.Shutdown(shutdownCtx); err != nil {
+		appLogger.Error().Err(err).Msg("http server shutdown error")
+	} else {
+		appLogger.Info().Msg("http server gracefully stopped")
+	}
+}
