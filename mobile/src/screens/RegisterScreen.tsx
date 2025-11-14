@@ -26,14 +26,40 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleRegister = async () => {
     try {
+      // 验证输入
+      if (!email.trim()) {
+        Alert.alert("错误", "请输入邮箱");
+        return;
+      }
+      if (!password.trim()) {
+        Alert.alert("错误", "请输入密码");
+        return;
+      }
+      if (password.length < 8) {
+        Alert.alert("错误", "密码至少需要 8 个字符");
+        return;
+      }
+      if (!displayName.trim()) {
+        Alert.alert("错误", "请输入显示名称");
+        return;
+      }
+
       setLoading(true);
       await register(email.trim(), password, displayName.trim());
     } catch (error) {
-      console.error(error);
-      Alert.alert(
-        "注册失败 / Registration failed",
-        "请检查输入信息 / Please review your input."
-      );
+      console.error("Register error:", error);
+      // 更详细的错误信息
+      if (error instanceof Error) {
+        Alert.alert(
+          "注册失败",
+          error.message || "请检查输入信息"
+        );
+      } else {
+        Alert.alert(
+          "注册失败",
+          "请检查输入信息"
+        );
+      }
     } finally {
       setLoading(false);
     }

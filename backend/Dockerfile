@@ -12,7 +12,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /out/server ./cmd/server
 
-FROM gcr.io/distroless/base-debian12
+FROM alpine:3.18
 
 WORKDIR /app
 
@@ -23,7 +23,5 @@ ENV CONFIG_PATH=/app/configs/config.yaml
 ENV HTTP_PORT=8080
 
 EXPOSE 8080
-
-USER nonroot:nonroot
 
 ENTRYPOINT ["/app/server"]
