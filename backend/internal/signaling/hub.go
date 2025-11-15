@@ -12,15 +12,19 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 
+	"github.com/allcallall/backend/internal/media"
 	"github.com/allcallall/backend/internal/presence"
 )
 
 // Hub 管理所有 WebSocket 连接
 // Hub orchestrates signaling sessions across users and instances.
+// 现在同时支持 WebSocket 信令和 Pion WebRTC 媒体引擎
+// Now supports both WebSocket signaling and Pion WebRTC media engine
 type Hub struct {
-	redis    *redis.Client
-	logger   zerolog.Logger
-	presence *presence.Manager
+	redis        *redis.Client
+	logger       zerolog.Logger
+	presence     *presence.Manager
+	mediaEngine  *media.Engine
 
 	mu      sync.RWMutex
 	clients map[string]map[*client]struct{}

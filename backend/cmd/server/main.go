@@ -96,6 +96,25 @@ func main() {
 
 	userHandler := handlers.NewUserHandler(appLogger, userSvc, presenceManager, contactSvc)
 	signalingHub := signaling.NewHub(redisClient, appLogger, presenceManager)
+
+	// 初始化 Pion WebRTC 媒体引擎
+	// Initialize Pion WebRTC media engine
+	mediaEngine, err := signaling.InitPionMediaEngine(appLogger)
+	if err != nil {
+		appLogger.Fatal().Err(err).Msg("failed to initialize pion media engine")
+	}
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := mediaEngine.Shutdown(ctx); err != nil {
+			appLogger.Error().Err(err).Msg("error shutting down media engine")
+		}
+	}()
+
+	// 将媒体引擎关联到信令枢纽
+	// Attach media engine to signaling hub
+	signalingHub.WithMediaEngine(mediaEngine)
+
 	signalingHandler := handlers.NewSignalingHandler(appLogger, signalingHub)
 
 	server.RegisterRoutes(engine, server.RouteDependencies{
