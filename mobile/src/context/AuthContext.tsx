@@ -12,7 +12,7 @@ import * as authApi from "../api/auth";
 import * as usersApi from "../api/users";
 import { User } from "../api/users";
 
-const STORAGE_KEY = "allcall.auth";
+const STORAGE_KEY = "allcallall.auth";
 
 interface AuthState {
   token: string | null;

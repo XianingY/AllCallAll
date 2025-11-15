@@ -1,4 +1,4 @@
-module github.com/allcall/backend
+module github.com/allcallall/backend
 
 go 1.22
 

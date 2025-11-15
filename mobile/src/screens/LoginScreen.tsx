@@ -44,7 +44,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       style={styles.container}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>AllCall</Text>
+        <Text style={styles.title}>AllCallAll</Text>
         <Text style={styles.subtitle}>
           以邮箱为唯一地址的实时通话系统{"\n"}Email-first calling experience
         </Text>

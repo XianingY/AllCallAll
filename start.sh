@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# AllCall 项目启动脚本
+# AllCallAll 项目启动脚本
 # Usage: ./start.sh
 
 set -e
 
-echo "🚀 Starting AllCall Project..."
+echo "🚀 Starting AllCallAll Project..."
 
 # 设置 Go 代理
 export GOPROXY=https://goproxy.cn,direct
@@ -25,7 +25,7 @@ echo "📊 Service Status:"
 docker-compose ps
 
 echo ""
-echo "✅ AllCall is starting!"
+echo "✅ AllCallAll is starting!"
 echo ""
 echo "📝 Useful commands:"
 echo "  - View logs:        docker-compose logs -f"

@@ -8,7 +8,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/allcall/backend/internal/models"
+	"github.com/allcallall/backend/internal/models"
 )
 
 // Service 用户业务逻辑

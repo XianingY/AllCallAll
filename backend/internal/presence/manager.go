@@ -8,7 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 
-	"github.com/allcall/backend/internal/user"
+	"github.com/allcallall/backend/internal/user"
 )
 
 const (

@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 
-	"github.com/allcall/backend/internal/auth"
-	"github.com/allcall/backend/internal/contact"
-	"github.com/allcall/backend/internal/presence"
-	"github.com/allcall/backend/internal/user"
+	"github.com/allcallall/backend/internal/auth"
+	"github.com/allcallall/backend/internal/contact"
+	"github.com/allcallall/backend/internal/presence"
+	"github.com/allcallall/backend/internal/user"
 )
 
 // UserHandler 用户相关接口

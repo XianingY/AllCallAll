@@ -73,7 +73,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.title}>创建账号 / Create account</Text>
         <Text style={styles.subtitle}>
-          通过邮箱使用 AllCall，开启实时通信
+          通过邮箱使用 AllCallAll，开启实时通信
         </Text>
       </View>
       <View style={styles.form}>

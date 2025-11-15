@@ -1,4 +1,4 @@
-package com.allcall.mobile
+package com.allcallall.mobile
 
 import android.app.Application
 import android.content.res.Configuration

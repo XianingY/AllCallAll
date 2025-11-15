@@ -116,7 +116,7 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const result = await PermissionsAndroid.requestMultiple(permissions, {
         title: "语音通话权限",
-        message: "AllCall 需要访问麦克风 / 蓝牙设备以进行语音通话",
+        message: "AllCallAll 需要访问麦克风 / 蓝牙设备以进行语音通话",
         buttonPositive: "允许"
       });
 

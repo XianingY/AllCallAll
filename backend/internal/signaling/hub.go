@@ -12,7 +12,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 
-	"github.com/allcall/backend/internal/presence"
+	"github.com/allcallall/backend/internal/presence"
 )
 
 // Hub 管理所有 WebSocket 连接

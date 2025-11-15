@@ -7,7 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 
-	appcfg "github.com/allcall/backend/internal/config"
+	appcfg "github.com/allcallall/backend/internal/config"
 )
 
 // NewRedis 创建 Redis 客户端

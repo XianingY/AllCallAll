@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/allcall/backend/internal/models"
-	"github.com/allcall/backend/internal/user"
+	"github.com/allcallall/backend/internal/models"
+	"github.com/allcallall/backend/internal/user"
 )
 
 // Service 联系人业务逻辑

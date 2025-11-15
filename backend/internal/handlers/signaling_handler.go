@@ -7,8 +7,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog"
 
-	"github.com/allcall/backend/internal/auth"
-	"github.com/allcall/backend/internal/signaling"
+	"github.com/allcallall/backend/internal/auth"
+	"github.com/allcallall/backend/internal/signaling"
 )
 
 // SignalingHandler 信令处理器

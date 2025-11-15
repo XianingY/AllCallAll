@@ -47,12 +47,12 @@ const AppNavigator: React.FC = () => {
           <Stack.Screen
             name="Login"
             component= {LoginScreen}
-            options={{ title: "AllCall 登录 / Login" }}
+            options={{ title: "AllCallAll 登录 / Login" }}
           />
           <Stack.Screen
             name="Register"
             component={RegisterScreen}
-            options={{ title: "AllCall 注册 / Register" }}
+            options={{ title: "AllCallAll 注册 / Register" }}
           />
         </>
       )}

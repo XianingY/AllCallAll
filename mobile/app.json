@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "AllCall",
-    "slug": "allcall",
+    "name": "AllCallAll",
+    "slug": "allcallall",
     "version": "1.0.0",
     "sdkVersion": "51.0.0",
     "orientation": "portrait",
@@ -14,7 +14,7 @@
       "**/*"
     ],
     "android": {
-      "package": "com.allcall.mobile",
+      "package": "com.allcallall.mobile",
       "permissions": [
         "INTERNET",
         "RECORD_AUDIO",
@@ -27,9 +27,9 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.allcall.mobile",
+      "bundleIdentifier": "com.allcallall.mobile",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "Allow AllCall to access the microphone for voice calls"
+        "NSMicrophoneUsageDescription": "Allow AllCallAll to access the microphone for voice calls"
       }
     },
     "web": {

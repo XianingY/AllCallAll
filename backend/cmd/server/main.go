@@ -11,18 +11,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/allcall/backend/internal/auth"
-	"github.com/allcall/backend/internal/cache"
-	"github.com/allcall/backend/internal/config"
-	"github.com/allcall/backend/internal/contact"
-	"github.com/allcall/backend/internal/database"
-	"github.com/allcall/backend/internal/handlers"
-	"github.com/allcall/backend/internal/logger"
-	"github.com/allcall/backend/internal/models"
-	"github.com/allcall/backend/internal/presence"
-	"github.com/allcall/backend/internal/server"
-	"github.com/allcall/backend/internal/signaling"
-	"github.com/allcall/backend/internal/user"
+	"github.com/allcallall/backend/internal/auth"
+	"github.com/allcallall/backend/internal/cache"
+	"github.com/allcallall/backend/internal/config"
+	"github.com/allcallall/backend/internal/contact"
+	"github.com/allcallall/backend/internal/database"
+	"github.com/allcallall/backend/internal/handlers"
+	"github.com/allcallall/backend/internal/logger"
+	"github.com/allcallall/backend/internal/models"
+	"github.com/allcallall/backend/internal/presence"
+	"github.com/allcallall/backend/internal/server"
+	"github.com/allcallall/backend/internal/signaling"
+	"github.com/allcallall/backend/internal/user"
 )
 
 // main 入口

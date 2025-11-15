@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 
-	appcfg "github.com/allcall/backend/internal/config"
+	appcfg "github.com/allcallall/backend/internal/config"
 )
 
 // NewMySQL 建立新的 MySQL 数据库连接

@@ -10,7 +10,7 @@ server:
 database:
   # MySQL 连接参数 (DSN)
   # MySQL connection settings
-  dsn: "allcall:allcallpass@tcp(localhost:3306)/allcall?parseTime=true&charset=utf8mb4&loc=Local"
+  dsn: "allcallall:allcallallpass@tcp(localhost:3306)/allcallall_db?parseTime=true&charset=utf8mb4&loc=Local"
   max_open_conns: 25
   max_idle_conns: 10
   conn_max_lifetime_minutes: 30
@@ -27,7 +27,7 @@ jwt:
   # JWT 签发密钥 (部署时务必替换)
   # JWT signing secret (replace in production)
   secret: "please_change_me"
-  issuer: "allcall-backend"
+  issuer: "allcallall-backend"
   access_token_ttl_minutes: 60
   refresh_token_ttl_hours: 168
 

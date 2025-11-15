@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/allcall/backend/internal/handlers"
+	"github.com/allcallall/backend/internal/handlers"
 )
 
 // RouteDependencies 路由所需依赖

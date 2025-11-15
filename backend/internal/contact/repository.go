@@ -5,7 +5,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/allcall/backend/internal/models"
+	"github.com/allcallall/backend/internal/models"
 )
 
 // Repository 联系人与关系数据访问

@@ -7,7 +7,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/allcall/backend/internal/models"
+	"github.com/allcallall/backend/internal/models"
 )
 
 // Repository 用户数据访问层
