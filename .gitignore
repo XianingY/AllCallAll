@@ -1,10 +1,12 @@
 # MacOS
 .DS_Store
+**/.DS_Store
 
 # IDE
 .qoder/
 .vscode/
 .idea/
+.claude/
 
 # Backend Go
 backend/.gocache/
@@ -42,6 +44,6 @@ yarn-error.log*
 # Assistant Docs
 docs/
 
-# macOS system files
-.DS_Store
-**/.DS_Store
+#Claude Code
+CLAUDE.md
+
