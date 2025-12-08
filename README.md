@@ -59,7 +59,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/XianingY/AllCallAll.git
+git clone git@github.com:1victorloui1/AllCallAll.git
 cd AllCallAll
 
 # 安装后端依赖
@@ -534,8 +534,8 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ### 📧 联系方式
 
-- 问题报告: [GitHub Issues](https://github.com/yourusername/allcall/issues)
-- 讨论: [GitHub Discussions](https://github.com/yourusername/allcall/discussions)
+- 问题报告: [GitHub Issues](https://github.com/1victorloui1/AllCallAll/issues)
+- 讨论: [GitHub Discussions](https://github.com/1victorloui1/AllCallAll/discussions)
 
 ### 🙏 致谢
 
@@ -599,7 +599,7 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ```bash
 # Clone the repository
-git clone https://github.com/XianingY/AllCallAll.git
+git clone git@github.com:1victorloui1/AllCallAll.git
 cd AllCallAll
 
 # Install backend dependencies
@@ -1048,8 +1048,8 @@ MIT License - See the [LICENSE](LICENSE) file for details
 
 ### 📧 Contact
 
-- Issues: [GitHub Issues](https://github.com/yourusername/allcall/issues)
-- Discussions: [GitHub Discussions](https://github.com/yourusername/allcall/discussions)
+- Issues: [GitHub Issues](https://github.com/1victorloui1/AllCallAll/issues)
+- Discussions: [GitHub Discussions](https://github.com/1victorloui1/AllCallAll/discussions)
 
 ### 🙏 Acknowledgments
 
