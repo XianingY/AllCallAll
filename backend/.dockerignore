@@ -1,0 +1,12 @@
+.git
+.gitignore
+.DS_Store
+cmd/server/server
+bin
+dist
+coverage.out
+*.log
+infra
+docs
+mobile
+README.md

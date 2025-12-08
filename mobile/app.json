@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "AllCallAll",
+    "slug": "allcallall",
+    "version": "1.0.0",
+    "sdkVersion": "51.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.allcallall.mobile",
+      "permissions": [
+        "INTERNET",
+        "RECORD_AUDIO",
+        "MODIFY_AUDIO_SETTINGS",
+        "CAMERA",
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_CONNECT"
+      ]
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.allcallall.mobile",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Allow AllCallAll to access the microphone for voice calls"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c285bf78-61df-433a-9504-d6be37a6600c"
+      }
+    }
+  }
+}
