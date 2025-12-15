@@ -223,7 +223,7 @@ networks:
 ### 4. 启动服务
 
 ```bash
-cd /opt/allcall/infra
+cd /opt/allcallall/infra
 docker-compose up -d
 docker-compose -f docker-compose.production.yml up -d 
 
