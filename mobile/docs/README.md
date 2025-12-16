@@ -1,12 +1,12 @@
-# 📱 AllCallAll 移动端文档
+# AllCallAll 移动端文档
 
-移动端（React Native）的完整开发文档和指南。
+移动端（React Native）的完整文档和指南。
 
-## 📁 文档目录
+## 📁 目录结构
 
 ### 🔧 设置和初始化 (`setup/`)
 
-初始化和配置移动端开发环境。
+初始化和配置移动端环境。
 
 - **[AUDIO_FILES_SETUP.md](./setup/AUDIO_FILES_SETUP.md)** - 音频文件配置
   - 音频资源的设置和验证
@@ -57,25 +57,28 @@
 ```
 mobile/
 ├── src/                          源代码
-│   ├── api/                      - API 调用
-│   ├── components/               - UI 组件
-│   ├── context/                  - React Context
-│   ├── screens/                  - 页面屏幕
-│   ├── services/                 - 业务服务
-│   └── config/                   - 配置文件
-├── android/                      - Android 特定代码
-├── ios/                         - iOS 特定代码
-├── assets/                       - 静态资源
-│   └── sounds/                   - 音频文件
-├── scripts/                     - 移动端脚本
-│   ├── verify-alarm-setup.sh
-│   ├── verify-app-env.sh
-│   └── README.md
-├── docs/                        - 移动端文档（本文档）
-├── package.json                - 依赖管理
-├── app.json                    - 应用配置
-├── metro.config.js            - 打包配置
-└── tsconfig.json              - TypeScript 配置
+│   ├── api/                      API 调用
+│   ├── components/               UI 组件
+│   ├── context/                  React Context
+│   ├── screens/                  页面屏幕
+│   ├── services/                 业务服务
+│   └── config/                   配置文件
+├── android/                      Android 特定代码
+├── ios/                         iOS 特定代码
+├── assets/                       静态资源
+│   └── sounds/                   音频文件
+├── docs/                        文档
+│   ├── setup/                   设置文档
+│   ├── features/                功能文档
+│   ├── guides/                  使用指南
+│   └── troubleshooting/         故障排除
+├── scripts/                     脚本
+│   ├── verify-alarm-setup.sh   验证 Alarm 设置
+│   └── verify-app-env.sh       验证应用环境
+├── package.json                依赖管理
+├── app.json                    应用配置
+├── metro.config.js            打包配置
+└── tsconfig.json              TypeScript 配置
 ```
 
 ---
@@ -85,7 +88,6 @@ mobile/
 ### 安装依赖
 
 ```bash
-cd mobile
 npm install
 ```
 
@@ -122,6 +124,14 @@ adb install -r android/app/build/outputs/apk/debug/app-debug.apk
 
 ---
 
+## 🔗 相关链接
+
+- [主项目文档](../../docs/README.md)
+- [API 文档](../../docs/api/API_DOCUMENTATION.md)
+- [部署指南](../../docs/deployment/DEPLOYMENT_GUIDE.md)
+
+---
+
 ## 📝 常用命令
 
 ```bash
@@ -139,16 +149,51 @@ cd android && ./gradlew assembleDebug
 
 # 构建 APK（Release）
 cd android && ./gradlew assembleRelease
+
+# 运行代码检查
+npm run lint
+
+# 运行类型检查
+npm run type-check
 ```
 
 ---
 
-## 🔗 相关链接
+## 🛠️ 故障排除
 
-- [主项目文档](../README.md)
-- [API 文档](../api/API_DOCUMENTATION.md)
-- [部署指南](../deployment/DEPLOYMENT_GUIDE.md)
-- [移动端脚本](../../mobile/scripts/README.md)
+### 依赖冲突
+
+```bash
+# 清除 node_modules 重新安装
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### 构建失败
+
+```bash
+# 清除 Gradle 缓存
+cd android && ./gradlew clean
+
+# 重新构建
+./gradlew assembleDebug
+```
+
+### 环境检测失败
+
+```bash
+# 运行环境验证脚本
+./scripts/verify-app-env.sh
+./scripts/verify-alarm-setup.sh
+```
+
+---
+
+## 🤝 贡献指南
+
+1. 新增文档时，将其放在相应的 `docs/` 子目录
+2. 新增脚本时，将其放在 `scripts/` 目录
+3. 保持文档和代码同步更新
 
 ---
 
