@@ -19,6 +19,8 @@ const CallOverlay: React.FC = () => {
     isAudioEnabled,
     toggleVideo,
     toggleAudio,
+    isRemoteVideoEnabled,
+    isRemoteAudioEnabled,
     switchCamera,
     translationEnabled,
     translationLanguage,
@@ -58,7 +60,7 @@ const CallOverlay: React.FC = () => {
   return (
     <View style={styles.container}>
       {/* 远端视频（全屏） */}
-      {hasRemoteVideo && remoteStream ? (
+      {hasRemoteVideo && remoteStream && isRemoteVideoEnabled ? (
         <RTCView
           streamURL={remoteStream.toURL()}
           style={styles.remoteVideo}
@@ -67,7 +69,9 @@ const CallOverlay: React.FC = () => {
         />
       ) : (
         <View style={styles.audioOnlyBackground}>
-          <Text style={styles.audioOnlyText}>语音通话 / Audio Call</Text>
+          <Text style={styles.audioOnlyText}>
+            {!isRemoteVideoEnabled && hasRemoteVideo ? "对方已关闭摄像头 / Camera Off" : "语音通话 / Audio Call"}
+          </Text>
           <Text style={styles.peerEmail}>{session.peerEmail}</Text>
         </View>
       )}
@@ -96,6 +100,11 @@ const CallOverlay: React.FC = () => {
         {!isAudioEnabled && (
           <View style={styles.mutedIndicator}>
             <Text style={styles.mutedText}>🎙️ 麦克风已关闭 / Muted</Text>
+          </View>
+        )}
+        {!isRemoteAudioEnabled && (
+          <View style={[styles.mutedIndicator, { backgroundColor: "rgba(245,158,11,0.8)" }]}>
+            <Text style={styles.mutedText}>对方麦克风已关闭 / Remote Muted</Text>
           </View>
         )}
       </View>

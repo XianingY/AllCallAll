@@ -63,6 +63,8 @@ interface SignalingContextValue {
   // 视频通话相关状态
   isVideoEnabled: boolean;
   isAudioEnabled: boolean;
+  isRemoteVideoEnabled: boolean;
+  isRemoteAudioEnabled: boolean;
   cameraFacing: CameraFacing;
   // 翻译功能相关状态
   translationEnabled: boolean;
@@ -178,127 +180,63 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
   const pendingLocalCandidates = useRef<IceCandidatePayload[]>([]);
   const pendingRemoteCandidates = useRef<IceCandidatePayload[]>([]);
   const subtitlesDataChannelRef = useRef<any | null>(null);
+  const iceRestartTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    sessionRef.current = session;
-  }, [session]);
+  const [isRemoteVideoEnabled, setIsRemoteVideoEnabled] = useState(true);
+  const [isRemoteAudioEnabled, setIsRemoteAudioEnabled] = useState(true);
 
-  useEffect(() => {
-    let cancelled = false;
-    const loadIceServers = async () => {
-      if (!token) {
-        setIceServers(DEFAULT_ICE_SERVERS);
-        return;
-      }
-      try {
-        const config = await fetchWebRTCConfig(token);
-        const servers = Array.isArray(config.ice_servers) ? config.ice_servers : [];
-        if (!cancelled && servers.length) {
-          setIceServers(servers as RTCIceServer[]);
-          console.log("[SignalingContext] Using ICE servers from backend", servers);
-        } else if (!cancelled) {
-          setIceServers(DEFAULT_ICE_SERVERS);
-        }
-      } catch (error) {
-        console.warn("[SignalingContext] Failed to load ICE servers, fallback to defaults", error);
-        if (!cancelled) {
-          setIceServers(DEFAULT_ICE_SERVERS);
-        }
-      }
-    };
-    loadIceServers();
-    return () => {
-      cancelled = true;
-    };
-  }, [token]);
+  const setMediaBitrate = (sdp: string, bitrate: number): string => {
+    let lines = sdp.split("\r\n");
+    let videoIndex = -1;
 
-  // 监听通话状态变化，播放相应的音频和震动提醒
-  useEffect(() => {
-    console.log("[SignalingContext] Status changed to:", status, "Session:", session?.direction);
-
-    switch (status) {
-      case "incoming":
-        // 接到来电，播放来电铃声和震动
-        console.log("[SignalingContext] Playing incoming call ringtone with vibration");
-        if (settings.audioNotificationsEnabled) {
-          AudioService.play("incoming_call");
-        }
-        if (settings.vibrationEnabled) {
-          VibrationService.vibrate("incoming_call");
-        }
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].indexOf("m=video") === 0) {
+        videoIndex = i;
         break;
-
-      case "connecting":
-        // 正在呼叫，播放回铃音和震动
-        console.log("[SignalingContext] Connecting to remote peer, playing ringback");
-        if (settings.audioNotificationsEnabled) {
-          AudioService.play("ringback");
-        }
-        if (settings.vibrationEnabled) {
-          VibrationService.vibrate("ringback");
-        }
-        break;
-
-      case "in_call":
-        // 通话接通，停止所有音频和震动
-        console.log("[SignalingContext] Call connected, stopping all audio and vibration");
-        AudioService.stopAll();
-        VibrationService.cancel();
-        if (settings.vibrationEnabled) {
-          VibrationService.vibrate("call_connected"); // 通话接通提示音
-        }
-        break;
-
-      case "idle":
-        // 通话结束，停止所有音频和震动
-        // 仅在从非idle状态改变到idle时才播放结束提示
-        console.log("[SignalingContext] Call ended/idle, stopping all audio and vibration");
-        AudioService.stopAll();
-        VibrationService.cancel();
-        // 只有当通话真实结束时才提示（由其他地方触发），避免应用启动时的误触
-        break;
-    }
-  }, [status, session, settings.audioNotificationsEnabled, settings.vibrationEnabled]);
-
-  const ensureAudioPermission = useCallback(async () => {
-    console.log("[ensureAudioPermission] Platform:", Platform.OS);
-
-    if (Platform.OS === "android") {
-      try {
-        const permissions: string[] = [
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-        ];
-
-        if (Platform.Version >= 31) {
-          permissions.push(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT);
-        }
-
-        // 部分厂商在仅采集音频时也会检查摄像头权限，提前申请避免崩溃
-        permissions.push(PermissionsAndroid.PERMISSIONS.CAMERA);
-
-        console.log("[ensureAudioPermission] Requesting permissions:", permissions);
-
-        // 直接请求权限，不使用超时（真机上应该正常工作）
-        const result = await PermissionsAndroid.requestMultiple(permissions as any);
-        console.log("[ensureAudioPermission] Permission result:", result);
-
-        const allGranted = permissions.every(
-          (permission) => (result as Record<string, any>)[permission] === PermissionsAndroid.RESULTS.GRANTED
-        );
-
-        console.log("[ensureAudioPermission] All permissions granted:", allGranted);
-        return allGranted;
-      } catch (error) {
-        console.error("[ensureAudioPermission] Permission request error:", error);
-        Alert.alert("权限错误 / Permission Error", `无法获取权限: ${error instanceof Error ? error.message : String(error)} / Failed to get permissions.`);
-        return false;
       }
     }
-    console.log("[ensureAudioPermission] iOS platform, returning true");
-    return true;
-  }, []);
+
+    if (videoIndex === -1) return sdp;
+
+    let nextIndex = videoIndex + 1;
+    while (nextIndex < lines.length && lines[nextIndex].indexOf("m=") !== 0) {
+      if (lines[nextIndex].indexOf("b=AS:") === 0) {
+        lines[nextIndex] = "b=AS:" + bitrate;
+        return lines.join("\r\n");
+      }
+      nextIndex++;
+    }
+
+    lines.splice(videoIndex + 1, 0, "b=AS:" + bitrate);
+    return lines.join("\r\n");
+  };
+
+  const restartIce = useCallback(async () => {
+    if (!peerRef.current || status !== "in_call") return;
+
+    console.log("[SignalingContext] Attempting ICE restart...");
+    try {
+      const pc = peerRef.current;
+      const offer = await pc.createOffer({ iceRestart: true });
+      offer.sdp = setMediaBitrate(offer.sdp, 1000); 
+      await pc.setLocalDescription(offer);
+
+      const currentSession = sessionRef.current;
+      if (currentSession) {
+        sendMessage({
+          type: "call.invite", 
+          call_id: currentSession.callId,
+          to: currentSession.peerEmail,
+          payload: offer
+        });
+      }
+    } catch (e) {
+      console.error("[SignalingContext] ICE restart failed:", e);
+    }
+  }, [status, sendMessage]);
 
   const resetPeerResources = useCallback(() => {
+
     pendingLocalCandidates.current = [];
     pendingRemoteCandidates.current = [];
 
@@ -495,6 +433,20 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
       const [stream] = event.streams;
       if (stream) {
         setRemoteStream(stream);
+
+        stream.getTracks().forEach((track: any) => {
+          track.onmute = () => {
+            if (track.kind === "video") setIsRemoteVideoEnabled(false);
+            if (track.kind === "audio") setIsRemoteAudioEnabled(false);
+          };
+          track.onunmute = () => {
+            if (track.kind === "video") setIsRemoteVideoEnabled(true);
+            if (track.kind === "audio") setIsRemoteAudioEnabled(true);
+          };
+          
+          if (track.kind === "video") setIsRemoteVideoEnabled(track.enabled && !track.muted);
+          if (track.kind === "audio") setIsRemoteAudioEnabled(track.enabled && !track.muted);
+        });
       }
     };
 
@@ -512,24 +464,27 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("[PeerConnection] Connection state changed:", state);
 
       if (state === "failed" || state === "closed") {
-        // 这两个状态是不可恢复的，立即结束通话
         console.log("[PeerConnection] Connection failed or closed, ending call");
         resetCallState();
       } else if (state === "disconnected") {
-        // disconnected 是临时状态，可能会恢复
-        // 等待 5 秒，如果还是 disconnected 或变成 failed 才结束
-        console.log("[PeerConnection] Connection disconnected, waiting for recovery...");
-        setTimeout(() => {
+        console.log("[PeerConnection] Connection disconnected, attempting ICE restart...");
+        
+        restartIce().catch(e => console.error("[SignalingContext] restartIce failed:", e));
+
+        if (iceRestartTimeoutRef.current) clearTimeout(iceRestartTimeoutRef.current);
+        iceRestartTimeoutRef.current = setTimeout(() => {
           const currentState = pc.connectionState;
           if (currentState === "disconnected" || currentState === "failed") {
-            console.log("[PeerConnection] Connection did not recover after 5s, ending call");
+            console.log("[PeerConnection] Connection did not recover after 10s, ending call");
             resetCallState();
-          } else {
-            console.log("[PeerConnection] Connection recovered to:", currentState);
           }
-        }, 5000);
+        }, 10000);
       } else if (state === "connected") {
         console.log("[PeerConnection] Connection established successfully!");
+        if (iceRestartTimeoutRef.current) {
+          clearTimeout(iceRestartTimeoutRef.current);
+          iceRestartTimeoutRef.current = null;
+        }
       }
     };
 
@@ -596,6 +551,40 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
           if (!message.from || !isSessionDescriptionPayload(message.payload)) {
             Alert.alert("呼叫错误", "收到无效的呼叫请求");
             break;
+          }
+
+          if (status === "in_call" && session?.callId === message.call_id) {
+            console.log("[SignalingContext] Received renegotiation offer (ICE restart or bitrate update)");
+            try {
+              const pc = peerRef.current;
+              if (pc) {
+                await pc.setRemoteDescription(new RTCSessionDescription(message.payload));
+                const answer = await pc.createAnswer();
+                answer.sdp = setMediaBitrate(answer.sdp, 1000);
+                await pc.setLocalDescription(answer);
+                sendMessage({
+                  type: "call.accept",
+                  call_id: message.call_id,
+                  to: message.from,
+                  payload: answer
+                });
+                await drainRemoteCandidates();
+              }
+            } catch (e) {
+              console.error("[SignalingContext] Failed to handle renegotiation offer:", e);
+            }
+            break;
+          }
+
+          setSession({
+            callId: message.call_id ?? "",
+            peerEmail: message.from,
+            direction: "incoming",
+            offer: message.payload
+          });
+          setStatus("incoming");
+          break;
+
           }
           setSession({
             callId: message.call_id ?? "",
@@ -792,10 +781,10 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
           offerToReceiveAudio: true,
           offerToReceiveVideo: true
         });
-        console.log("[startCall] Offer created, SDP length:", offer.sdp?.length);
 
-        console.log("[startCall] Setting local description...");
+        offer.sdp = setMediaBitrate(offer.sdp, 1000);
         await pc.setLocalDescription(offer);
+
         console.log("[startCall] Local description set");
 
         pendingTarget.current = email;
@@ -895,6 +884,7 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       const answer = await pc.createAnswer();
+      answer.sdp = setMediaBitrate(answer.sdp, 1000);
       await pc.setLocalDescription(answer);
       await drainRemoteCandidates();
 
@@ -997,7 +987,12 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("[toggleVideo] Error:", error);
       Alert.alert("错误 / Error", "无法切换视频状态 / Failed to toggle video.");
     }
-  }, [isVideoEnabled, isAudioEnabled, cameraFacing, localStream]);
+  }, [      isVideoEnabled,
+      isAudioEnabled,
+      isRemoteVideoEnabled,
+      isRemoteAudioEnabled,
+      cameraFacing,
+ localStream]);
 
   /**
    * 切换麦克风开关
@@ -1166,6 +1161,8 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
       remoteStream,
       isVideoEnabled,
       isAudioEnabled,
+      isRemoteVideoEnabled,
+      isRemoteAudioEnabled,
       cameraFacing,
       translationEnabled,
       translationLanguage,
@@ -1189,6 +1186,8 @@ export const SignalingProvider: React.FC<{ children: React.ReactNode }> = ({
       remoteStream,
       isVideoEnabled,
       isAudioEnabled,
+      isRemoteVideoEnabled,
+      isRemoteAudioEnabled,
       cameraFacing,
       translationEnabled,
       translationLanguage,
