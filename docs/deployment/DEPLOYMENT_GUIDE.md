@@ -56,11 +56,16 @@ docker-compose --version
 ```
 
 ### 3. 克隆项目代码
+
+> **自定义部署路径**: 默认部署到 `/opt/allcallall`，可通过以下方式自定义：
+> - 环境变量: `export WORK_DIR=/your/path`
+> - 命令行参数: `bash deploy-cloud.sh <ip> <domain> /your/path`
+
 ```bash
 cd /opt
-sudo mkdir -p /opt/allcall
-sudo chown -R $USER:$USER /opt/allcall
-cd /opt/allcall
+sudo mkdir -p /opt/allcallall
+sudo chown -R $USER:$USER /opt/allcallall
+cd /opt/allcallall
 git clone https://github.com/yourusername/allcall.git .
 ```
 
@@ -73,7 +78,7 @@ git clone https://github.com/yourusername/allcall.git .
 #### 创建生产环境配置
 ```bash
 # 编辑配置文件
-sudo nano /opt/allcall/backend/configs/config.production.yaml
+sudo nano /opt/allcallallall/backend/configs/config.production.yaml
 ```
 
 **config.production.yaml 内容**:
@@ -130,7 +135,7 @@ logging:
 
 **创建 .env 文件**:
 ```bash
-# /opt/allcall/.env
+# /opt/allcallallall/.env
 MAIL_PASSWORD=your_qq_email_auth_code
 JWT_SECRET=your-secure-jwt-secret-here-change-it
 MYSQL_ROOT_PASSWORD=strong_root_password_change_this
@@ -141,7 +146,7 @@ APP_ENV=production
 ### 3. 修改 docker-compose.production.yml
 
 ```yaml
-# /opt/allcall/infra/docker-compose.production.yml
+# /opt/allcallallall/infra/docker-compose.production.yml
 services:
   mysql:
     image: mysql:8.0
@@ -227,7 +232,7 @@ networks:
 ### 4. 启动服务
 
 ```bash
-cd /opt/allcallall/infra
+cd /opt/allcallallall/infra
 docker-compose up -d
 docker-compose -f docker-compose.production.yml up -d 
 
@@ -320,7 +325,7 @@ sudo certbot certonly --standalone -d api.allcall.com -d allcall.com
 
 ### 2. Nginx 配置（HTTPS）
 
-**创建 `/opt/allcall/nginx.conf`**:
+**创建 `/opt/allcallallall/nginx.conf`**:
 
 ```nginx
 user nginx;
@@ -503,7 +508,7 @@ Firebase Cloud Messaging (FCM) 用于在用户离线或应用在后台时发送�
 # Firebase Console → 项目设置 → 服务账号 → 生成新私钥
 
 # 设置环境变量
-export FCM_SERVICE_ACCOUNT_PATH="/opt/allcall/secrets/firebase-service-account.json"
+export FCM_SERVICE_ACCOUNT_PATH="/opt/allcallallall/secrets/firebase-service-account.json"
 ```
 
 **Docker Compose 配置**:
@@ -512,7 +517,7 @@ backend:
   environment:
     FCM_SERVICE_ACCOUNT_PATH: ${FCM_SERVICE_ACCOUNT_PATH:-}
   volumes:
-    - ./secrets:/opt/allcall/secrets:ro
+    - ./secrets:/opt/allcallallall/secrets:ro
 ```
 
 ### 3. 移动端配置
@@ -672,7 +677,7 @@ CREATE INDEX idx_room_code ON rooms(room_code);
 
 ```bash
 # 编辑 redis.conf
-sudo nano /opt/allcall/redis.conf
+sudo nano /opt/allcallallall/redis.conf
 
 # 添加内存优化
 maxmemory 2gb
@@ -769,7 +774,7 @@ nethogs
 
 # 监控磁盘
 df -h
-du -sh /opt/allcall
+du -sh /opt/allcallall
 ```
 
 ---
@@ -805,7 +810,7 @@ du -sh /opt/allcall
 
 - [ ] 云服务器已准备（Ubuntu 20.04+）
 - [ ] Docker 和 Docker Compose 已安装
-- [ ] 项目代码已克隆到 `/opt/allcall`
+- [ ] 项目代码已克隆到 `/opt/allcallall`
 - [ ] 生产环境配置文件已创建
 - [ ] .env 文件已配置（所有密钥已更改）
 - [ ] MySQL 和 Redis 正常运行
