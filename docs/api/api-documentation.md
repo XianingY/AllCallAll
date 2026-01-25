@@ -463,7 +463,7 @@ wscat -c ws://localhost:8080/api/v1/ws?token=<your_jwt_token>
 
 ## 🔗 相关文档
 
-- [配置说明](./CONFIGURATION.md)
-- [数据库文档](./DATABASE.md)
-- [部署指南](./DEPLOYMENT_GUIDE.md)
-- [安全指南](../configuration/SECURITY_GUIDELINES.md)
+- [配置说明](./configuration.md)
+- [数据库文档](./database.md)
+- [部署指南](./deployment-guide.md)
+- [安全指南](../configuration/security-guidelines.md)
