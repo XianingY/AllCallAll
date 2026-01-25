@@ -7,8 +7,12 @@
 4. [HTTPS/SSL 配置](#httpssl-配置)
 5. [防火墙和安全组](#防火墙和安全组)
 6. [域名配置](#域名配置)
-7. [性能优化](#性能优化)
-8. [故障排查](#故障排查)
+7. [推送通知配置 (FCM)](#推送通知配置-fcm)
+8. [TURN/TURNS 服务器配置](#turnturns-服务器配置)
+9. [端到端加密 (E2EE)](#端到端加密-e2ee)
+10. [受限网络部署](#受限网络部署)
+11. [性能优化](#性能优化)
+12. [故障排查](#故障排查)
 
 ---
 
@@ -418,6 +422,16 @@ http {
 - **6379**: Redis（仅限内部网络，不对外）
 - **22**: SSH 管理（限制特定 IP）
 
+#### WebRTC/TURN 相关端口 (可选)
+
+| 端口 | 协议 | 用途 | 开放范围 |
+|-----|------|------|---------| 
+| 3478 | UDP/TCP | TURN 服务 | 外网 |
+| 443 | TCP | TURNS (TLS) | 外网 (可选) |
+| 49152-49200 | UDP | TURN 中继端口 | 外网 |
+
+> 📌 如果不运行自托管 TURN 服务器，可不开放这些端口
+
 ### 2. UFW 防火墙配置
 
 ```bash
@@ -463,6 +477,179 @@ sudo ufw default allow outgoing
 ```bash
 nslookup api.allcall.com
 dig api.allcall.com
+```
+
+---
+
+## 推送通知配置 (FCM)
+
+> ⚠️ **功能状态**: 即将推出 - 后端 FCM 模块已就位，待 Firebase Admin SDK 集成
+
+### 概述
+
+Firebase Cloud Messaging (FCM) 用于在用户离线或应用在后台时发送来电通知。
+
+### 1. Firebase 项目设置
+
+1. 前往 [Firebase Console](https://console.firebase.google.com/)
+2. 创建新项目或选择现有项目
+3. 添加 Android 应用 (包名: `com.allcallall.mobile`)
+4. 下载 `google-services.json`
+
+### 2. 后端配置
+
+```bash
+# 生成服务账号密钥
+# Firebase Console → 项目设置 → 服务账号 → 生成新私钥
+
+# 设置环境变量
+export FCM_SERVICE_ACCOUNT_PATH="/opt/allcall/secrets/firebase-service-account.json"
+```
+
+**Docker Compose 配置**:
+```yaml
+backend:
+  environment:
+    FCM_SERVICE_ACCOUNT_PATH: ${FCM_SERVICE_ACCOUNT_PATH:-}
+  volumes:
+    - ./secrets:/opt/allcall/secrets:ro
+```
+
+### 3. 移动端配置
+
+将 `google-services.json` 放置到 `mobile/android/app/`
+
+Token 注册端点: `POST /api/v1/users/fcm-token`
+
+### 4. 验证
+
+```bash
+# 查看后端日志
+docker-compose logs backend | grep -i fcm
+```
+
+---
+
+## TURN/TURNS 服务器配置
+
+### 1. 标准 TURN 服务器 (端口 3478)
+
+```bash
+docker run -d --network host --name coturn instrumentisto/coturn \
+  -a -f -v -n --log-file=stdout \
+  --realm=allcallall --user=allcallall:strongpassword \
+  --external-ip=$(curl -s ifconfig.me) \
+  --min-port=49152 --max-port=49200
+```
+
+### 2. TURNS on 443 (企业网络穿透)
+
+适用于仅允许 HTTPS 出站的企业网络。
+
+**使用 Docker Compose**:
+```bash
+cd infra
+docker-compose -f docker-compose.turn.yml up -d
+```
+
+**证书配置**: 将 TLS 证书放置于 `infra/ssl/`
+
+**ICE 服务器配置**:
+```bash
+export WEBRTC_ICE_SERVERS_JSON='[
+  {"urls":["stun:stun.l.google.com:19302"]},
+  {"urls":["turn:turn.example.com:3478"],"username":"user","credential":"pass"},
+  {"urls":["turns:turn.example.com:443?transport=tcp"],"username":"user","credential":"pass"}
+]'
+```
+
+### 3. 移动端配置
+
+```bash
+# 启用受限网络模式
+EXPO_PUBLIC_RESTRICTED_NETWORK=1
+```
+
+---
+
+## 端到端加密 (E2EE)
+
+### 概述
+
+AllCallAll 实现应用层端到端加密，确保通话密钥永不经过服务器。
+
+**技术规格**:
+- **密钥交换**: ECDH (P-256 曲线)
+- **会话密钥派生**: HKDF-SHA256
+- **传输通道**: WebRTC DataChannel (`e2ee-key-exchange`)
+- **存储**: 身份密钥使用设备 Keychain 安全存储
+
+> ⚠️ **重要限制**: 由于 `react-native-webrtc` 不支持 Insertable Streams API，
+> 本 E2EE 实现用于建立共享密钥和指纹验证，而非媒体帧级加密。
+> WebRTC 媒体流仍受 DTLS-SRTP 传输层加密保护。
+
+### 部署注意事项
+
+1. **后端无需配置**: 密钥交换通过点对点 DataChannel 完成
+2. **日志安全**: 密钥永不出现在服务器日志中
+3. **DataChannel 依赖**: 确保 WebRTC 连接正常建立
+
+### 用户验证
+
+应用界面显示安全指纹，用户可通过带外渠道核对。
+
+### 代码位置
+
+- 密钥生成: `mobile/src/services/e2ee/E2EEService.ts`
+- 密钥交换: `mobile/src/services/e2ee/E2EEKeyExchange.ts`
+- 集成点: `mobile/src/context/SignalingContext.tsx`
+
+---
+
+## 受限网络部署
+
+### 适用场景
+
+- 企业网络仅允许 HTTPS/443 出站
+- 需要通过 HTTP 代理的环境
+- WebSocket 被阻断的网络
+
+### 1. 混合信令 (WebSocket + HTTP Long-Poll)
+
+当 WebSocket 被阻断时，客户端可切换到 HTTP 长轮询。
+
+**后端端点** (已实现):
+| 端点 | 方法 | 说明 |
+|-----|------|------|
+| `/api/v1/signaling/send` | POST | 发送信令消息 |
+| `/api/v1/signaling/poll?timeout_ms=25000` | GET | 轮询信令消息 |
+
+**移动端配置**:
+```bash
+# 强制使用 HTTP 长轮询
+EXPO_PUBLIC_SIGNALING_TRANSPORT=poll
+
+# 自动模式 (默认)
+EXPO_PUBLIC_SIGNALING_TRANSPORT=auto
+```
+
+### 2. WebSocket Keepalive
+
+某些代理会断开空闲连接。启用 keepalive:
+
+```bash
+EXPO_PUBLIC_SIGNALING_SHAPING=1
+```
+
+### 3. 完整受限网络配置
+
+```bash
+EXPO_PUBLIC_API_HTTP=https://api.company.com
+EXPO_PUBLIC_API_WS=wss://api.company.com
+EXPO_PUBLIC_FORCE_TLS=1
+EXPO_PUBLIC_RESTRICTED_NETWORK=1
+EXPO_PUBLIC_SIGNALING_TRANSPORT=auto
+EXPO_PUBLIC_SIGNALING_SHAPING=1
 ```
 
 ---

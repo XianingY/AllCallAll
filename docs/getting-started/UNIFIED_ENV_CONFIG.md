@@ -152,7 +152,69 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 | `JWT_SECRET` | your-secret-key... | ⚠️ 生产更改 | JWT签名密钥（32字符以上） |
 | `MAIL_PASSWORD` | jvjxuwmopqgahdgh | jvjxuwmopqgahdgh | QQ邮箱授权码 |
 | `WEBRTC_ICE_SERVERS_JSON` | `[{"urls":["stun:stun.l.google.com:19302"]}]` | 同左 | WebRTC STUN服务器 |
+| `FCM_SERVICE_ACCOUNT_PATH` | (空) | /path/to/key.json | Firebase密钥路径 |
+| `WS_PING_INTERVAL` | 30s | 30s | WebSocket ping间隔 |
+| `WS_PONG_WAIT` | 60s | 60s | Pong等待超时 |
 | `APP_ENV` | development | production | 应用环境标识 |
+
+---
+
+## 📱 移动端环境变量 (EXPO_PUBLIC_*)
+
+Expo 应用使用 `EXPO_PUBLIC_` 前缀的环境变量，这些变量在构建时嵌入应用。
+
+### 基础配置
+
+| 变量名 | 默认值 | 说明 |
+|-------|-------|------|
+| `EXPO_PUBLIC_API_HTTP` | (config中定义) | 覆盖 API 基础地址 |
+| `EXPO_PUBLIC_API_WS` | (config中定义) | 覆盖 WebSocket 基础地址 |
+| `EXPO_PUBLIC_FORCE_TLS` | `0` | 设为 `1` 强制使用 HTTPS/WSS |
+
+### 受限网络配置
+
+| 变量名 | 默认值 | 说明 |
+|-------|-------|------|
+| `EXPO_PUBLIC_RESTRICTED_NETWORK` | `0` | 设为 `1` 优先使用 TURNS on 443 |
+| `EXPO_PUBLIC_SIGNALING_TRANSPORT` | `auto` | `auto`: 自动切换; `poll`: 强制HTTP |
+| `EXPO_PUBLIC_SIGNALING_SHAPING` | `0` | 设为 `1` 启用 WebSocket keepalive |
+
+### 配置文件示例
+
+**开发环境** (`.env.local`):
+```bash
+EXPO_PUBLIC_API_HTTP=http://192.168.1.30:8080
+EXPO_PUBLIC_API_WS=ws://192.168.1.30:8080
+```
+
+**生产环境** (`.env.production`):
+```bash
+EXPO_PUBLIC_API_HTTP=https://api.allcall.com
+EXPO_PUBLIC_API_WS=wss://api.allcall.com
+EXPO_PUBLIC_FORCE_TLS=1
+```
+
+**企业受限网络** (`.env.restricted`):
+```bash
+EXPO_PUBLIC_API_HTTP=https://api.company.com
+EXPO_PUBLIC_API_WS=wss://api.company.com
+EXPO_PUBLIC_FORCE_TLS=1
+EXPO_PUBLIC_RESTRICTED_NETWORK=1
+EXPO_PUBLIC_SIGNALING_TRANSPORT=poll
+EXPO_PUBLIC_SIGNALING_SHAPING=1
+```
+
+### 应用变量的方式
+
+```bash
+# 开发时
+APP_ENV=development npx expo start
+
+# 构建 APK 时
+eas build --platform android --profile production
+# EAS 会从 eas.json 中读取环境变量配置
+```
+
 
 ### ⚠️ 生产环境密码修改建议
 
