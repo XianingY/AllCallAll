@@ -414,9 +414,9 @@ bash /Users/byzantium/github/allcallall/infra/fix-unified-config.sh
 
 ## 📚 相关文档
 
-- [Docker启动指南](./DOCKER_STARTUP_GUIDE.md)
-- [生产环境完整指南](./PRODUCTION_SETUP_AND_APK_BUILD.md)
-- [后端诊断报告](./BACKEND_DIAGNOSIS_AND_FIX.md)
+- [Docker启动指南](./docker-startup-guide.md)
+- [生产环境完整指南](./production-setup-and-apk-build.md)
+- [后端诊断报告](./backend-diagnosis-and-fix.md)
 - [快速参考](../APK_BUILD_QUICK_REFERENCE.md)
 
 ---
