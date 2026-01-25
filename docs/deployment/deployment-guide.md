@@ -13,6 +13,66 @@
 10. [受限网络部署](#受限网络部署)
 11. [性能优化](#性能优化)
 12. [故障排查](#故障排查)
+13. [命令速查](#命令速查)
+
+---
+
+## 部署架构图
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    互联网用户 (Internet Users)                    │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+                   公网 IP: 81.68.168.207
+                   域名: api.allcall.com
+                            │
+        ┌───────────────────┴───────────────────┐
+        │                                       │
+        ▼                                       ▼
+   HTTP:80 ───────────────────────────────► HTTPS:443
+   (自动重定向到 HTTPS)                   (安全连接)
+        │
+        ▼
+   ┌──────────────────────────────────────────────┐
+   │            Nginx 反向代理 + SSL/TLS          │
+   │  • HTTP/HTTPS 协议转换                       │
+   │  • 负载均衡                                   │
+   │  • 静态文件服务                               │
+   │  • 路由转发                                   │
+   └──────────────┬───────────────────────────────┘
+                  │
+        ┌─────────┼─────────┐
+        ▼         ▼         ▼
+   ┌─────────┐ ┌────────┐ ┌──────────┐
+   │ Backend │ │ MySQL  │ │  Redis   │
+   │  API    │ │  DB    │ │  Cache   │
+   │(8080)   │ │(3306)  │ │ (6379)   │
+   └─────────┘ └────────┘ └──────────┘
+        │         │           │
+        └─────────┴───────────┘
+              Docker Compose
+              (在 /opt/allcallall/infra)
+
+┌──────────────────────────────────────────────────────┐
+│         移动应用 (Mobile App - Android/iOS)          │
+│  • 通过公网 IP 或域名连接                            │
+│  • HTTPS API 调用                                   │
+│  • WSS WebSocket 信令连接                           │
+│  • HTTPS Long-Poll 信令 (备用通道)                  │
+│  • WebRTC 点对点视频通话                            │
+│  • E2EE 密钥交换 (DataChannel)                      │
+└──────────────────────────────────────────────────────┘
+```
+
+### 服务端口概览
+
+| 组件 | 端口 | 容器网络 | 外网访问 |
+|------|------|---------|---------| 
+| Go API | 8080 | 内部 | 通过 Nginx 代理 |
+| MySQL | 3306 | 内部 | ❌ 不开放 |
+| Redis | 6379 | 内部 | ❌ 不开放 |
+| Nginx | 80/443 | 外部 | ✅ 开放 |
 
 ---
 
@@ -78,7 +138,7 @@ git clone https://github.com/yourusername/allcall.git .
 #### 创建生产环境配置
 ```bash
 # 编辑配置文件
-sudo nano /opt/allcallallall/backend/configs/config.production.yaml
+sudo nano /opt/allcallall/backend/configs/config.production.yaml
 ```
 
 **config.production.yaml 内容**:
@@ -135,7 +195,7 @@ logging:
 
 **创建 .env 文件**:
 ```bash
-# /opt/allcallallall/.env
+# /opt/allcallall/.env
 MAIL_PASSWORD=your_qq_email_auth_code
 JWT_SECRET=your-secure-jwt-secret-here-change-it
 MYSQL_ROOT_PASSWORD=strong_root_password_change_this
@@ -146,7 +206,7 @@ APP_ENV=production
 ### 3. 修改 docker-compose.production.yml
 
 ```yaml
-# /opt/allcallallall/infra/docker-compose.production.yml
+# /opt/allcallall/infra/docker-compose.production.yml
 services:
   mysql:
     image: mysql:8.0
@@ -232,7 +292,7 @@ networks:
 ### 4. 启动服务
 
 ```bash
-cd /opt/allcallallall/infra
+cd /opt/allcallall/infra
 docker-compose up -d
 docker-compose -f docker-compose.production.yml up -d 
 
@@ -325,7 +385,7 @@ sudo certbot certonly --standalone -d api.allcall.com -d allcall.com
 
 ### 2. Nginx 配置（HTTPS）
 
-**创建 `/opt/allcallallall/nginx.conf`**:
+**创建 `/opt/allcallall/nginx.conf`**:
 
 ```nginx
 user nginx;
@@ -508,7 +568,7 @@ Firebase Cloud Messaging (FCM) 用于在用户离线或应用在后台时发送�
 # Firebase Console → 项目设置 → 服务账号 → 生成新私钥
 
 # 设置环境变量
-export FCM_SERVICE_ACCOUNT_PATH="/opt/allcallallall/secrets/firebase-service-account.json"
+export FCM_SERVICE_ACCOUNT_PATH="/opt/allcallall/secrets/firebase-service-account.json"
 ```
 
 **Docker Compose 配置**:
@@ -517,7 +577,7 @@ backend:
   environment:
     FCM_SERVICE_ACCOUNT_PATH: ${FCM_SERVICE_ACCOUNT_PATH:-}
   volumes:
-    - ./secrets:/opt/allcallallall/secrets:ro
+    - ./secrets:/opt/allcallall/secrets:ro
 ```
 
 ### 3. 移动端配置
@@ -677,7 +737,7 @@ CREATE INDEX idx_room_code ON rooms(room_code);
 
 ```bash
 # 编辑 redis.conf
-sudo nano /opt/allcallallall/redis.conf
+sudo nano /opt/allcallall/redis.conf
 
 # 添加内存优化
 maxmemory 2gb
@@ -821,4 +881,124 @@ du -sh /opt/allcallall
 - [ ] 域名 DNS 已解析
 - [ ] 移动应用配置已更新为公网地址
 - [ ] 应用已部署并测试
+
+---
+
+## 命令速查
+
+### 快速启动命令
+
+```bash
+# 1. 连接到服务器
+ssh -i your-key.pem ubuntu@81.68.168.207
+
+# 2. 运行部署脚本
+cd /opt/allcallall
+bash scripts/deployment/deploy-cloud.sh 81.68.168.207 api.allcall.com
+
+# 3. 配置环境变量
+nano /opt/allcallall/.env
+# 修改 MAIL_PASSWORD 和其他密钥
+
+# 4. 启动所有服务
+cd /opt/allcallall/infra
+docker-compose up -d
+
+# 5. 申请 SSL 证书
+sudo certbot certonly --standalone -d api.allcall.com
+sudo systemctl enable certbot.timer
+sudo systemctl start certbot.timer
+
+# 6. 验证服务
+curl http://81.68.168.207:8080/api/v1/health
+curl https://api.allcall.com/api/v1/health
+```
+
+### Docker Compose 常用命令
+
+```bash
+# 查看所有服务状态
+docker-compose ps
+
+# 查看服务日志（最后 50 行）
+docker-compose logs backend --tail=50
+
+# 实时监控日志
+docker-compose logs -f backend
+
+# 重启单个服务
+docker-compose restart backend
+
+# 重启所有服务
+docker-compose restart
+
+# 进入容器
+docker-compose exec backend bash
+
+# 查看环境变量
+docker-compose config | grep -A 20 "backend:"
+
+# 停止所有服务
+docker-compose down
+
+# 停止并删除数据（慎用）
+docker-compose down -v
+```
+
+### ADB 调试命令
+
+```bash
+# 查看连接的设备
+adb devices
+
+# 查看日志
+adb logcat | grep allcallall
+
+# 安装 APK
+adb install -r app.apk
+
+# 卸载应用
+adb uninstall com.allcallall.mobile
+
+# 启动应用
+adb shell am start -n com.allcallall.mobile/.MainActivity
+
+# 测试网络连接
+adb shell ping 81.68.168.207
+```
+
+### 数据库备份
+
+```bash
+# 备份 MySQL
+docker-compose exec mysql mysqldump -uroot -prootpass allcallall_db > backup.sql
+
+# 恢复 MySQL
+docker-compose exec -T mysql mysql -uroot -prootpass allcallall_db < backup.sql
+
+# 备份 Redis
+docker-compose exec redis redis-cli --rdb /data/dump.rdb
+```
+
+### 故障排查
+
+```bash
+# 检查 ADB 反向转发
+adb reverse --list
+
+# 重启 adb 服务
+adb kill-server && adb start-server
+
+# 测试后端 API
+curl -v http://localhost:8080/api/v1/health
+
+# 查看防火墙状态
+sudo ufw status
+
+# 检查证书有效期
+openssl x509 -in /etc/letsencrypt/live/api.allcall.com/fullchain.pem -text -noout | grep "Not"
+
+# 手动续期证书
+sudo certbot renew --force-renewal
+```
 
