@@ -106,13 +106,12 @@ sudo sh get-docker.sh
 sudo usermod -aG docker $USER
 newgrp docker
 
-# 安装 Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+# 安装 Docker Compose V2 插件
+sudo apt install -y docker-compose-plugin
 
 # 验证安装
 docker --version
-docker-compose --version
+docker compose version
 ```
 
 ### 3. 克隆项目代码
@@ -293,17 +292,16 @@ networks:
 
 ```bash
 cd /opt/allcallall/infra
-docker-compose up -d
-docker-compose -f docker-compose.production.yml up -d 
+docker compose -f docker-compose.production.yml up -d --build
 
 # 查看启动状态
-docker-compose ps
+docker compose -f docker-compose.production.yml ps
 
 # 查看日志
-docker-compose logs -f backend
+docker compose -f docker-compose.production.yml logs -f backend
 
 # 测试后端
-curl http://81.68.168.207:8080/api/v1/users/me
+curl http://81.68.168.207/api/v1/health
 ```
 
 ---
@@ -590,7 +588,7 @@ Token 注册端点: `POST /api/v1/users/fcm-token`
 
 ```bash
 # 查看后端日志
-docker-compose logs backend | grep -i fcm
+docker compose logs backend | grep -i fcm
 ```
 
 ---
@@ -614,7 +612,7 @@ docker run -d --network host --name coturn instrumentisto/coturn \
 **使用 Docker Compose**:
 ```bash
 cd infra
-docker-compose -f docker-compose.turn.yml up -d
+docker compose -f docker-compose.turn.yml up -d
 ```
 
 **证书配置**: 将 TLS 证书放置于 `infra/ssl/`
@@ -768,7 +766,7 @@ keepalive_timeout 65;
 #### 1. WebSocket 连接失败（403/401）
 ```bash
 # 检查后端日志
-docker-compose logs backend | grep -i websocket
+docker compose logs backend | grep -i websocket
 
 # 检查 token 有效性
 curl -H "Authorization: Bearer your_token" http://localhost:8080/api/v1/users/me
@@ -777,7 +775,7 @@ curl -H "Authorization: Bearer your_token" http://localhost:8080/api/v1/users/me
 #### 2. 数据库连接错误
 ```bash
 # 进入 MySQL 容器
-docker-compose exec mysql mysql -uroot -prootpass
+docker compose exec mysql mysql -uroot -prootpass
 
 # 检查用户和权限
 SHOW GRANTS FOR 'allcallall'@'%';
@@ -786,10 +784,10 @@ SHOW GRANTS FOR 'allcallall'@'%';
 #### 3. Redis 连接问题
 ```bash
 # 测试 Redis
-docker-compose exec redis redis-cli ping
+docker compose exec redis redis-cli ping
 
 # 检查内存
-docker-compose exec redis redis-cli INFO memory
+docker compose exec redis redis-cli INFO memory
 ```
 
 #### 4. HTTPS 证书错误
@@ -810,13 +808,13 @@ sudo systemctl start certbot.timer
 
 ```bash
 # 查看所有服务
-docker-compose ps
+docker compose ps
 
 # 查看容器资源使用
 docker stats
 
 # 查看日志
-docker-compose logs -f backend --tail=100
+docker compose logs -f backend --tail=100
 ```
 
 ### 2. 设置日志聚合
@@ -843,13 +841,13 @@ du -sh /opt/allcallall
 
 1. **定期更新依赖**
    ```bash
-   docker-compose pull
-   docker-compose up -d
+   docker compose pull
+   docker compose up -d
    ```
 
 2. **备份数据库**
    ```bash
-   docker-compose exec mysql mysqldump -uroot -prootpass allcallall_db > backup.sql
+   docker compose exec mysql mysqldump -uroot -prootpass allcallall_db > backup.sql
    ```
 
 3. **使用防火墙限制访问**
@@ -962,31 +960,31 @@ docker compose -f docker-compose.production.yml up -d --build
 
 ```bash
 # 查看所有服务状态
-docker-compose ps
+docker compose ps
 
 # 查看服务日志（最后 50 行）
-docker-compose logs backend --tail=50
+docker compose logs backend --tail=50
 
 # 实时监控日志
-docker-compose logs -f backend
+docker compose logs -f backend
 
 # 重启单个服务
-docker-compose restart backend
+docker compose restart backend
 
 # 重启所有服务
-docker-compose restart
+docker compose restart
 
 # 进入容器
-docker-compose exec backend bash
+docker compose exec backend bash
 
 # 查看环境变量
-docker-compose config | grep -A 20 "backend:"
+docker compose config | grep -A 20 "backend:"
 
 # 停止所有服务
-docker-compose down
+docker compose down
 
 # 停止并删除数据（慎用）
-docker-compose down -v
+docker compose down -v
 ```
 
 ### ADB 调试命令
@@ -1015,13 +1013,13 @@ adb shell ping 81.68.168.207
 
 ```bash
 # 备份 MySQL
-docker-compose exec mysql mysqldump -uroot -prootpass allcallall_db > backup.sql
+docker compose exec mysql mysqldump -uroot -prootpass allcallall_db > backup.sql
 
 # 恢复 MySQL
-docker-compose exec -T mysql mysql -uroot -prootpass allcallall_db < backup.sql
+docker compose exec -T mysql mysql -uroot -prootpass allcallall_db < backup.sql
 
 # 备份 Redis
-docker-compose exec redis redis-cli --rdb /data/dump.rdb
+docker compose exec redis redis-cli --rdb /data/dump.rdb
 ```
 
 ### 故障排查
