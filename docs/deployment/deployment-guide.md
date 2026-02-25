@@ -886,33 +886,77 @@ du -sh /opt/allcallall
 
 ## 命令速查
 
-### 快速启动命令
+### 后端部署（首次 + 后续更新）
+
+首次部署（推荐）
 
 ```bash
-# 1. 连接到服务器
-ssh -i your-key.pem ubuntu@81.68.168.207
+# 登录服务器（Ubuntu）
+ssh ubuntu@<SERVER_IP>
 
-# 2. 运行部署脚本
+# 准备代码目录
+sudo apt update && sudo apt install -y git
+sudo mkdir -p /opt/allcallall
+sudo chown -R $USER:$USER /opt/allcallall
+
+# 拉代码（main）
+git clone https://github.com/XianingY/AllCallAll.git /opt/allcallall
 cd /opt/allcallall
-bash scripts/deployment/deploy-cloud.sh 81.68.168.207 api.allcall.com
-
-# 3. 配置环境变量
-nano /opt/allcallall/.env
-# 修改 MAIL_PASSWORD 和其他密钥
-
-# 4. 启动所有服务
-cd /opt/allcallall/infra
-docker-compose up -d
-
-# 5. 申请 SSL 证书
-sudo certbot certonly --standalone -d api.allcall.com
-sudo systemctl enable certbot.timer
-sudo systemctl start certbot.timer
-
-# 6. 验证服务
-curl http://81.68.168.207:8080/api/v1/health
-curl https://api.allcall.com/api/v1/health
+git checkout main
 ```
+
+跑部署准备脚本（会装 Docker、生成 .env、配防火墙）
+
+```bash
+# 有域名
+bash /opt/allcallall/scripts/deployment/deploy-cloud.sh <SERVER_IP> <DOMAIN> /opt/allcallall https://github.com/XianingY/AllCallAll.git
+
+# 没域名（第二个参数留空）
+bash /opt/allcallall/scripts/deployment/deploy-cloud.sh <SERVER_IP> "" /opt/allcallall https://github.com/XianingY/AllCallAll.git
+```
+
+修改生产环境变量（至少改邮箱授权码）
+
+```bash
+nano /opt/allcallall/.env
+```
+
+重点看：`MAIL_PASSWORD`（必填），`JWT_SECRET` / `MYSQL_PASSWORD` / `REDIS_PASSWORD`（脚本会自动生成，建议保留或自行替换）。
+
+启动生产栈
+
+```bash
+cd /opt/allcallall/infra
+docker compose -f docker-compose.production.yml up -d --build
+```
+
+验证服务
+
+```bash
+# 容器状态
+docker compose -f /opt/allcallall/infra/docker-compose.production.yml ps
+
+# 后端日志
+docker compose -f /opt/allcallall/infra/docker-compose.production.yml logs -f backend
+
+# 健康检查（公网经过 Nginx）
+curl -f http://<SERVER_IP>/api/v1/health
+```
+
+后续更新上线（每次）
+
+```bash
+cd /opt/allcallall
+git checkout main
+git pull --ff-only origin main
+cd /opt/allcallall/infra
+docker compose -f docker-compose.production.yml up -d --build
+```
+
+注意两点：
+
+- 云厂商安全组也要放行 `22/80/443`（不仅是 UFW）。
+- 当前 `docker-compose.production.yml` 虽映射了 `443`，但 `nginx.conf` 默认只监听 `80`；先用 HTTP 验证成功，再单独做 HTTPS 配置。
 
 ### Docker Compose 常用命令
 
@@ -1001,4 +1045,3 @@ openssl x509 -in /etc/letsencrypt/live/api.allcall.com/fullchain.pem -text -noou
 # 手动续期证书
 sudo certbot renew --force-renewal
 ```
-
