@@ -18,6 +18,7 @@ Thumbs.db
 # ============================
 .qoder/
 .claude/
+.sisyphus/
 .vscode/
 .idea/
 *.swp
