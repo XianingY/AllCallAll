@@ -199,7 +199,7 @@ MAIL_PASSWORD=your_qq_email_auth_code
 JWT_SECRET=your-secure-jwt-secret-here-change-it
 MYSQL_ROOT_PASSWORD=strong_root_password_change_this
 MYSQL_PASSWORD=strong_db_password_change_this
-APP_ENV=production
+FCM_SERVICE_ACCOUNT_PATH=/opt/allcallall/secrets/firebase-service-account.json
 ```
 
 ### 3. 修改 docker-compose.production.yml
@@ -243,7 +243,6 @@ services:
       - mysql
       - redis
     environment:
-      APP_ENV: production
       DB_DSN: allcallall:${MYSQL_PASSWORD}@tcp(mysql:3306)/allcallall_db?parseTime=true&charset=utf8mb4&loc=Local
       REDIS_ADDR: redis:6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
@@ -546,7 +545,7 @@ dig api.allcall.com
 
 ## 推送通知配置 (FCM)
 
-> ⚠️ **功能状态**: 即将推出 - 后端 FCM 模块已就位，待 Firebase Admin SDK 集成
+> 当前实现已接入 Firebase Admin SDK。配置 `FCM_SERVICE_ACCOUNT_PATH` 后，后端会实际发送推送；未配置时会安全降级。
 
 ### 概述
 

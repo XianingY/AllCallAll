@@ -63,9 +63,8 @@ JWT_SECRET=your-secret-key-min-32-characters-required
 MAIL_PASSWORD=jvjxuwmopqgahdgh
 WEBRTC_ICE_SERVERS_JSON=[{"urls":["stun:stun.l.google.com:19302"]}]
 
-# 环境标识
-APP_ENV=development
-# APP_ENV=production
+# 可选 FCM 配置
+FCM_SERVICE_ACCOUNT_PATH=/absolute/path/to/firebase-service-account.json
 EOF
 ```
 
@@ -84,7 +83,6 @@ REDIS_PASSWORD=redis_secure_password
 JWT_SECRET=your-secret-key-min-32-characters-required
 MAIL_PASSWORD=jvjxuwmopqgahdgh
 WEBRTC_ICE_SERVERS_JSON=[{"urls":["stun:stun.l.google.com:19302"]}]
-APP_ENV=development
 ```
 
 ### 步骤3: 重启所有服务以应用新配置
@@ -155,7 +153,6 @@ curl -X POST http://localhost:8080/api/v1/auth/login \
 | `FCM_SERVICE_ACCOUNT_PATH` | (空) | /path/to/key.json | Firebase密钥路径 |
 | `WS_PING_INTERVAL` | 30s | 30s | WebSocket ping间隔 |
 | `WS_PONG_WAIT` | 60s | 60s | Pong等待超时 |
-| `APP_ENV` | development | production | 应用环境标识 |
 
 ---
 
@@ -208,11 +205,11 @@ EXPO_PUBLIC_SIGNALING_SHAPING=1
 
 ```bash
 # 开发时
-APP_ENV=development npx expo start
+EXPO_PUBLIC_API_HTTP=http://127.0.0.1:8080 EXPO_PUBLIC_API_WS=ws://127.0.0.1:8080 npx expo start
 
 # 构建 APK 时
 eas build --platform android --profile production
-# EAS 会从 eas.json 中读取环境变量配置
+# EAS 会从 eas.json 或构建环境中读取 EXPO_PUBLIC_* 配置
 ```
 
 
@@ -305,9 +302,8 @@ JWT_SECRET=your-secret-key-min-32-characters-required
 MAIL_PASSWORD=jvjxuwmopqgahdgh
 WEBRTC_ICE_SERVERS_JSON=[{"urls":["stun:stun.l.google.com:19302"]}]
 
-# 环境标识
-APP_ENV=development
-# APP_ENV=production
+# 可选 FCM 配置
+FCM_SERVICE_ACCOUNT_PATH=/absolute/path/to/firebase-service-account.json
 EOF
 echo "✅ .env已更新"
 
@@ -400,7 +396,7 @@ bash /Users/byzantium/github/allcallall/infra/fix-unified-config.sh
 ```
 1. 更新.env中的生产密码
    ↓
-2. 设置APP_ENV=production
+2. 设置生产环境使用的 `EXPO_PUBLIC_API_HTTP`、`EXPO_PUBLIC_API_WS` 与 `EXPO_PUBLIC_FORCE_TLS=1`
    ↓
 3. 启动生产环境
    docker-compose -f docker-compose.production.yml up -d
