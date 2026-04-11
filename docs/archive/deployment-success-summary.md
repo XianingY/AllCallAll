@@ -31,8 +31,7 @@ JWT_SECRET=YmIsXq31js++5PDd/K112cwZXp6Nnnc80PNJXGBhF4M=
 MYSQL_ROOT_PASSWORD=JqMiCVQO9AKIz1CiKyKGa8uBG28=
 MYSQL_PASSWORD=VthN8XqT6U3vorMJGbkhKRlFEk4=
 REDIS_PASSWORD=k2jEfvZ1r/GDIWTEnuTgMubaBTQ=
-APP_ENV=development
-# APP_ENV=production
+FCM_SERVICE_ACCOUNT_PATH=/opt/allcallall/secrets/firebase-service-account.json
 WEBRTC_ICE_SERVERS_JSON=[{"urls":["stun:stun.l.google.com:19302"]}]
 ```
 
@@ -42,7 +41,7 @@ WEBRTC_ICE_SERVERS_JSON=[{"urls":["stun:stun.l.google.com:19302"]}]
 - **REDIS_PASSWORD**: 用于Backend连接Redis的加密密码
 - **JWT_SECRET**: JWT令牌签名密钥
 - **MAIL_PASSWORD**: QQ邮箱SMTP授权码
-- **APP_ENV**: 当前环境（development）
+- **历史记录说明**: 这份归档记录生成时仍使用 `APP_ENV` 叙事；当前仓库实现已改为仅通过 `EXPO_PUBLIC_*` 控制移动端配置。
 
 ---
 
@@ -190,19 +189,12 @@ docker-compose -f docker-compose.production.yml up -d --build
 
 ### 移动端配置文件
 
-已更新 `mobile/src/config/index.ts`:
+历史记录中的移动端地址已被新的 `EXPO_PUBLIC_API_HTTP` / `EXPO_PUBLIC_API_WS` 机制替代。当前仓库应通过启动命令或构建环境注入这些变量，例如：
 
-```typescript
-const getApiConfig = () => {
-  switch (APP_ENV) {
-    case 'development':
-      return {
-        HTTP: "http://10.136.17.108:8080",
-        WS: "ws://10.136.17.108:8080"
-      };
-    // ... 其他配置
-  }
-};
+```bash
+EXPO_PUBLIC_API_HTTP=http://10.136.17.108:8080 \
+EXPO_PUBLIC_API_WS=ws://10.136.17.108:8080 \
+npm run start
 ```
 
 ---
