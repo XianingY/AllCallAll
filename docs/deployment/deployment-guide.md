@@ -200,6 +200,10 @@ JWT_SECRET=your-secure-jwt-secret-here-change-it
 MYSQL_ROOT_PASSWORD=strong_root_password_change_this
 MYSQL_PASSWORD=strong_db_password_change_this
 FCM_SERVICE_ACCOUNT_PATH=/opt/allcallall/secrets/firebase-service-account.json
+PUBLIC_WEB_BASE_URL=https://app.example.com
+SUPPORT_EMAIL=support@example.com
+REVENUECAT_WEBHOOK_AUTH_TOKEN=replace-with-random-secret
+SUPPORT_API_TOKEN=replace-with-random-secret
 ```
 
 ### 3. 修改 docker-compose.production.yml
@@ -712,7 +716,11 @@ EXPO_PUBLIC_FORCE_TLS=1
 EXPO_PUBLIC_RESTRICTED_NETWORK=1
 EXPO_PUBLIC_SIGNALING_TRANSPORT=auto
 EXPO_PUBLIC_SIGNALING_SHAPING=1
+EXPO_PUBLIC_REVENUECAT_API_KEY=goog_xxxxx
+EXPO_PUBLIC_REVENUECAT_OFFERING_ID=default
 ```
+
+> Android 首发订阅 SKU 固定为 `premium_monthly` 与 `premium_yearly`。客户端不会从环境变量读取其他 SKU 名称。
 
 ---
 
