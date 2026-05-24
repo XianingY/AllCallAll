@@ -199,7 +199,11 @@ MAIL_PASSWORD=your_qq_email_auth_code
 JWT_SECRET=your-secure-jwt-secret-here-change-it
 MYSQL_ROOT_PASSWORD=strong_root_password_change_this
 MYSQL_PASSWORD=strong_db_password_change_this
-APP_ENV=production
+FCM_SERVICE_ACCOUNT_PATH=/opt/allcallall/secrets/firebase-service-account.json
+PUBLIC_WEB_BASE_URL=https://app.example.com
+SUPPORT_EMAIL=support@example.com
+REVENUECAT_WEBHOOK_AUTH_TOKEN=replace-with-random-secret
+SUPPORT_API_TOKEN=replace-with-random-secret
 ```
 
 ### 3. 修改 docker-compose.production.yml
@@ -243,7 +247,6 @@ services:
       - mysql
       - redis
     environment:
-      APP_ENV: production
       DB_DSN: allcallall:${MYSQL_PASSWORD}@tcp(mysql:3306)/allcallall_db?parseTime=true&charset=utf8mb4&loc=Local
       REDIS_ADDR: redis:6379
       REDIS_PASSWORD: ${REDIS_PASSWORD}
@@ -546,7 +549,7 @@ dig api.allcall.com
 
 ## 推送通知配置 (FCM)
 
-> ⚠️ **功能状态**: 即将推出 - 后端 FCM 模块已就位，待 Firebase Admin SDK 集成
+> 当前实现已接入 Firebase Admin SDK。配置 `FCM_SERVICE_ACCOUNT_PATH` 后，后端会实际发送推送；未配置时会安全降级。
 
 ### 概述
 
@@ -713,7 +716,11 @@ EXPO_PUBLIC_FORCE_TLS=1
 EXPO_PUBLIC_RESTRICTED_NETWORK=1
 EXPO_PUBLIC_SIGNALING_TRANSPORT=auto
 EXPO_PUBLIC_SIGNALING_SHAPING=1
+EXPO_PUBLIC_REVENUECAT_API_KEY=goog_xxxxx
+EXPO_PUBLIC_REVENUECAT_OFFERING_ID=default
 ```
+
+> Android 首发订阅 SKU 固定为 `premium_monthly` 与 `premium_yearly`。客户端不会从环境变量读取其他 SKU 名称。
 
 ---
 
