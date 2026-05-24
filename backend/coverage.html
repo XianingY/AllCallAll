@@ -1,0 +1,3067 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>auth: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/allcallall/backend/internal/auth/context.go (100.0%)</option>
+				
+				<option value="file1">github.com/allcallall/backend/internal/auth/jwt.go (95.2%)</option>
+				
+				<option value="file2">github.com/allcallall/backend/internal/auth/middleware.go (100.0%)</option>
+				
+				<option value="file3">github.com/allcallall/backend/internal/config/config.go (96.2%)</option>
+				
+				<option value="file4">github.com/allcallall/backend/internal/contact/repository.go (100.0%)</option>
+				
+				<option value="file5">github.com/allcallall/backend/internal/contact/service.go (92.9%)</option>
+				
+				<option value="file6">github.com/allcallall/backend/internal/fcm/manager.go (100.0%)</option>
+				
+				<option value="file7">github.com/allcallall/backend/internal/handlers/auth_handler.go (84.6%)</option>
+				
+				<option value="file8">github.com/allcallall/backend/internal/handlers/email_handler.go (40.7%)</option>
+				
+				<option value="file9">github.com/allcallall/backend/internal/handlers/response.go (100.0%)</option>
+				
+				<option value="file10">github.com/allcallall/backend/internal/handlers/signaling_handler.go (78.6%)</option>
+				
+				<option value="file11">github.com/allcallall/backend/internal/handlers/signaling_poll_handler.go (77.8%)</option>
+				
+				<option value="file12">github.com/allcallall/backend/internal/handlers/translation_ws_handler.go (55.6%)</option>
+				
+				<option value="file13">github.com/allcallall/backend/internal/handlers/user_handler.go (83.9%)</option>
+				
+				<option value="file14">github.com/allcallall/backend/internal/handlers/webrtc_handler.go (100.0%)</option>
+				
+				<option value="file15">github.com/allcallall/backend/internal/mail/service.go (80.0%)</option>
+				
+				<option value="file16">github.com/allcallall/backend/internal/mail/verification_code.go (70.4%)</option>
+				
+				<option value="file17">github.com/allcallall/backend/internal/media/engine.go (71.3%)</option>
+				
+				<option value="file18">github.com/allcallall/backend/internal/presence/manager.go (69.1%)</option>
+				
+				<option value="file19">github.com/allcallall/backend/internal/user/password.go (100.0%)</option>
+				
+				<option value="file20">github.com/allcallall/backend/internal/user/repository.go (95.7%)</option>
+				
+				<option value="file21">github.com/allcallall/backend/internal/user/service.go (89.1%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package auth
+
+import (
+        "errors"
+
+        "github.com/gin-gonic/gin"
+)
+
+const (
+        ginUserKey = "authenticated_user"
+)
+
+// SetClaimsToContext 把认证信息写入上下文
+// SetClaimsToContext stores claims into gin context.
+func SetClaimsToContext(ctx *gin.Context, claims *Claims) <span class="cov7" title="3">{
+        ctx.Set(ginUserKey, claims)
+}</span>
+
+// GetClaimsFromContext 从上下文获取认证信息
+// GetClaimsFromContext retrieves claims previously stored by middleware.
+func GetClaimsFromContext(ctx *gin.Context) (*Claims, error) <span class="cov10" title="5">{
+        v, exists := ctx.Get(ginUserKey)
+        if !exists </span><span class="cov1" title="1">{
+                return nil, errors.New("no auth claims in context")
+        }</span>
+        <span class="cov8" title="4">claims, ok := v.(*Claims)
+        if !ok </span><span class="cov1" title="1">{
+                return nil, errors.New("invalid auth claims type")
+        }</span>
+        <span class="cov7" title="3">return claims, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package auth
+
+import (
+        "errors"
+        "time"
+
+        "github.com/golang-jwt/jwt/v5"
+)
+
+// Claims JWT 声明
+// Claims extends RegisteredClaims with user information.
+type Claims struct {
+        UserID uint64 `json:"user_id"`
+        Email  string `json:"email"`
+        jwt.RegisteredClaims
+}
+
+// Manager JWT 管理器
+// Manager issues and validates JWT tokens.
+type Manager struct {
+        secret     []byte
+        issuer     string
+        accessTTL  time.Duration
+        refreshTTL time.Duration
+}
+
+// Config JWT 配置
+// Config holds JWT related configuration.
+type Config struct {
+        Secret          string
+        Issuer          string
+        AccessTokenTTL  time.Duration
+        RefreshTokenTTL time.Duration
+}
+
+// NewManager 创建管理器
+// NewManager instantiates a Manager from configuration.
+func NewManager(cfg Config) (*Manager, error) <span class="cov10" title="8">{
+        if cfg.Secret == "" </span><span class="cov1" title="1">{
+                return nil, errors.New("jwt secret must not be empty")
+        }</span>
+        <span class="cov9" title="7">if cfg.AccessTokenTTL &lt;= 0 </span><span class="cov7" title="5">{
+                cfg.AccessTokenTTL = time.Hour
+        }</span>
+        <span class="cov9" title="7">if cfg.RefreshTokenTTL &lt;= 0 </span><span class="cov8" title="6">{
+                cfg.RefreshTokenTTL = 24 * time.Hour * 7
+        }</span>
+        <span class="cov9" title="7">return &amp;Manager{
+                secret:     []byte(cfg.Secret),
+                issuer:     cfg.Issuer,
+                accessTTL:  cfg.AccessTokenTTL,
+                refreshTTL: cfg.RefreshTokenTTL,
+        }, nil</span>
+}
+
+// GenerateAccessToken 生成访问令牌
+// GenerateAccessToken issues a signed JWT for the user.
+func (m *Manager) GenerateAccessToken(userID uint64, email string) (string, error) <span class="cov5" title="3">{
+        now := time.Now()
+        claims := Claims{
+                UserID: userID,
+                Email:  email,
+                RegisteredClaims: jwt.RegisteredClaims{
+                        Issuer:    m.issuer,
+                        IssuedAt:  jwt.NewNumericDate(now),
+                        ExpiresAt: jwt.NewNumericDate(now.Add(m.accessTTL)),
+                        Subject:   email,
+                },
+        }
+
+        token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+        return token.SignedString(m.secret)
+}</span>
+
+// ParseToken 解析令牌
+// ParseToken validates JWT and returns claims.
+func (m *Manager) ParseToken(tokenString string) (*Claims, error) <span class="cov8" title="6">{
+        opts := []jwt.ParserOption{
+                jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Name}),
+        }
+        if m.issuer != "" </span><span class="cov8" title="6">{
+                opts = append(opts, jwt.WithIssuer(m.issuer))
+        }</span>
+
+        <span class="cov8" title="6">token, err := jwt.ParseWithClaims(tokenString, &amp;Claims{}, func(token *jwt.Token) (interface{}, error) </span><span class="cov7" title="5">{
+                return m.secret, nil
+        }</span>, opts...)
+
+        <span class="cov8" title="6">if err != nil </span><span class="cov5" title="3">{
+                return nil, err
+        }</span>
+
+        <span class="cov5" title="3">if claims, ok := token.Claims.(*Claims); ok &amp;&amp; token.Valid </span><span class="cov5" title="3">{
+                return claims, nil
+        }</span>
+        <span class="cov0" title="0">return nil, errors.New("invalid token claims")</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package auth
+
+import (
+        "net/http"
+        "strings"
+
+        "github.com/gin-gonic/gin"
+)
+
+// Middleware 返回 Gin 中间件
+// Middleware validates Authorization header (Bearer token) or query parameter token for WebSocket.
+func Middleware(manager *Manager) gin.HandlerFunc <span class="cov6" title="4">{
+        return func(c *gin.Context) </span><span class="cov6" title="4">{
+                // 优先尝试从 Authorization 请求头中提取 token
+                token := extractToken(c.Request.Header.Get("Authorization"))
+
+                // 如果没有找到，尝试从 URL 查询参数中获取（用于 WebSocket 连接）
+                if token == "" </span><span class="cov3" title="2">{
+                        token = c.Query("token")
+                        if token != "" </span><span class="cov1" title="1">{
+                                // Debug: 从查询参数获取到 token
+                                _ = token // 仅用于调试
+                        }</span>
+                }
+
+                <span class="cov6" title="4">if token == "" </span><span class="cov1" title="1">{
+                        c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
+                        return
+                }</span>
+
+                <span class="cov5" title="3">claims, err := manager.ParseToken(token)
+                if err != nil </span><span class="cov1" title="1">{
+                        c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+                        return
+                }</span>
+
+                <span class="cov3" title="2">SetClaimsToContext(c, claims)
+                c.Next()</span>
+        }
+}
+
+func extractToken(header string) string <span class="cov10" title="9">{
+        if header == "" </span><span class="cov5" title="3">{
+                return ""
+        }</span>
+        <span class="cov8" title="6">parts := strings.SplitN(header, " ", 2)
+        if len(parts) != 2 </span><span class="cov1" title="1">{
+                return ""
+        }</span>
+        <span class="cov7" title="5">if !strings.EqualFold(parts[0], "Bearer") </span><span class="cov1" title="1">{
+                return ""
+        }</span>
+        <span class="cov6" title="4">return strings.TrimSpace(parts[1])</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package config
+
+import (
+        "encoding/json"
+        "errors"
+        "fmt"
+        "os"
+        "path/filepath"
+        "strconv"
+        "strings"
+        "sync"
+
+        "gopkg.in/yaml.v3"
+)
+
+const (
+        defaultConfigPath = "./configs/config.yaml"
+)
+
+var (
+        cfg     *Config
+        cfgErr  error
+        cfgOnce sync.Once
+)
+
+// Config 应用总配置结构
+// Config aggregates all application settings loaded from YAML/Env.
+type Config struct {
+        Server      ServerConfig      `yaml:"server"`
+        Database    DatabaseConfig    `yaml:"database"`
+        Redis       RedisConfig       `yaml:"redis"`
+        Mail        Mail              `yaml:"mail"`
+        JWT         JWTConfig         `yaml:"jwt"`
+        WebRTC      WebRTCConfig      `yaml:"webrtc"`
+        Translation TranslationConfig `yaml:"translation"`
+        Logging     LoggingConfig     `yaml:"logging"`
+}
+
+// ServerConfig HTTP 服务相关配置
+// ServerConfig controls HTTP server runtime options.
+type ServerConfig struct {
+        Host            string `yaml:"host"`
+        Port            int    `yaml:"port"`
+        ReadTimeoutSec  int    `yaml:"read_timeout_seconds"`
+        WriteTimeoutSec int    `yaml:"write_timeout_seconds"`
+        IdleTimeoutSec  int    `yaml:"idle_timeout_seconds"`
+}
+
+// DatabaseConfig MySQL 配置
+// DatabaseConfig holds MySQL connection settings.
+type DatabaseConfig struct {
+        DSN                 string `yaml:"dsn"`
+        MaxOpenConns        int    `yaml:"max_open_conns"`
+        MaxIdleConns        int    `yaml:"max_idle_conns"`
+        ConnMaxLifetimeMins int    `yaml:"conn_max_lifetime_minutes"`
+}
+
+// RedisConfig Redis 连接配置
+// RedisConfig captures Redis client options.
+type RedisConfig struct {
+        Addr     string `yaml:"addr"`
+        Username string `yaml:"username"`
+        Password string `yaml:"password"`
+        DB       int    `yaml:"db"`
+}
+
+// JWTConfig JWT 相关配置
+// JWTConfig stores JWT signing options.
+type JWTConfig struct {
+        Secret             string `yaml:"secret"`
+        Issuer             string `yaml:"issuer"`
+        AccessTokenTTLMin  int    `yaml:"access_token_ttl_minutes"`
+        RefreshTokenTTLHrs int    `yaml:"refresh_token_ttl_hours"`
+}
+
+// WebRTCConfig WebRTC 相关配置
+// WebRTCConfig contains ICE server list.
+type WebRTCConfig struct {
+        ICEServers []ICEServer `yaml:"ice_servers" json:"ice_servers"`
+}
+
+// ICEServer 单个 ICE 服务配置
+// ICEServer represents a single ICE server entry.
+type ICEServer struct {
+        URLs       []string `yaml:"urls" json:"urls"`
+        Username   string   `yaml:"username" json:"username"`
+        Credential string   `yaml:"credential" json:"credential"`
+}
+
+// LoggingConfig 日志配置
+// LoggingConfig controls logger severity.
+type LoggingConfig struct {
+        Level string `yaml:"level"`
+}
+
+// TranslationConfig 实时翻译配置
+// TranslationConfig controls realtime translation runtime behavior.
+type TranslationConfig struct {
+        Enabled            bool          `yaml:"enabled"`
+        Provider           string        `yaml:"provider"`
+        ChunkMS            int           `yaml:"chunk_ms"`
+        PartialDebounceMS  int           `yaml:"partial_debounce_ms"`
+        MaxSessionsPerUser int           `yaml:"max_sessions_per_user"`
+        VolcAST            VolcASTConfig `yaml:"volc_ast"`
+}
+
+// VolcASTConfig 火山 AST 配置
+// VolcASTConfig stores Volcengine AST provider options.
+type VolcASTConfig struct {
+        WSURL      string `yaml:"ws_url"`
+        AppKey     string `yaml:"app_key"`
+        AccessKey  string `yaml:"access_key"`
+        ResourceID string `yaml:"resource_id"`
+        AppID      string `yaml:"app_id"`
+}
+
+// Load 初始化并返回全局配置
+// Load reads configuration exactly once and caches the result.
+func Load() (*Config, error) <span class="cov7" title="5">{
+        cfgOnce.Do(func() </span><span class="cov6" title="4">{
+                path := os.Getenv("CONFIG_PATH")
+                if path == "" </span><span class="cov1" title="1">{
+                        path = defaultConfigPath
+                }</span>
+
+                <span class="cov6" title="4">var content []byte
+                content, cfgErr = os.ReadFile(filepath.Clean(path))
+                if cfgErr != nil </span><span class="cov1" title="1">{
+                        cfgErr = fmt.Errorf("config: unable to read file %s: %w", path, cfgErr)
+                        return
+                }</span>
+
+                <span class="cov5" title="3">var parsed Config
+                if err := yaml.Unmarshal(content, &amp;parsed); err != nil </span><span class="cov1" title="1">{
+                        cfgErr = fmt.Errorf("config: unable to parse yaml: %w", err)
+                        return
+                }</span>
+
+                <span class="cov3" title="2">if err := parsed.postProcess(); err != nil </span><span class="cov1" title="1">{
+                        cfgErr = err
+                        return
+                }</span>
+
+                <span class="cov1" title="1">cfg = &amp;parsed</span>
+        })
+
+        <span class="cov7" title="5">return cfg, cfgErr</span>
+}
+
+func (c *Config) postProcess() error <span class="cov5" title="3">{
+        if c.Server.Port == 0 </span><span class="cov3" title="2">{
+                c.Server.Port = 8080
+        }</span>
+        <span class="cov5" title="3">if c.Server.ReadTimeoutSec == 0 </span><span class="cov5" title="3">{
+                c.Server.ReadTimeoutSec = 10
+        }</span>
+        <span class="cov5" title="3">if c.Server.WriteTimeoutSec == 0 </span><span class="cov5" title="3">{
+                c.Server.WriteTimeoutSec = 15
+        }</span>
+        <span class="cov5" title="3">if c.Server.IdleTimeoutSec == 0 </span><span class="cov5" title="3">{
+                c.Server.IdleTimeoutSec = 60
+        }</span>
+
+        <span class="cov5" title="3">if c.Logging.Level == "" </span><span class="cov3" title="2">{
+                c.Logging.Level = "info"
+        }</span>
+
+        // 支持环境变量覆盖数据库配置
+        // Support environment variables override database config
+        <span class="cov5" title="3">if dbDSN := os.Getenv("DB_DSN"); dbDSN != "" </span><span class="cov1" title="1">{
+                c.Database.DSN = dbDSN
+        }</span>
+
+        // 支持环境变量覆盖 Redis 配置
+        // Support environment variables override Redis config
+        <span class="cov5" title="3">if redisAddr := os.Getenv("REDIS_ADDR"); redisAddr != "" </span><span class="cov1" title="1">{
+                c.Redis.Addr = redisAddr
+        }</span>
+        <span class="cov5" title="3">if redisPassword := os.Getenv("REDIS_PASSWORD"); redisPassword != "" </span><span class="cov1" title="1">{
+                c.Redis.Password = redisPassword
+        }</span>
+
+        // 支持环境变量覆盖 JWT 密钥
+        // Support environment variables override JWT secret
+        <span class="cov5" title="3">if jwtSecret := os.Getenv("JWT_SECRET"); jwtSecret != "" </span><span class="cov3" title="2">{
+                c.JWT.Secret = jwtSecret
+        }</span>
+
+        // 支持环境变量覆盖邮件密码
+        // Support environment variables override mail password
+        <span class="cov5" title="3">if mailPassword := os.Getenv("MAIL_PASSWORD"); mailPassword != "" </span><span class="cov1" title="1">{
+                c.Mail.Password = mailPassword
+        }</span>
+
+        // 支持环境变量覆盖 ICE/TURN 配置，格式为 JSON 数组：
+        // [{"urls":["stun:stun.l.google.com:19302"]},{"urls":["turn:1.2.3.4:3478"],"username":"user","credential":"pass"}]
+        <span class="cov5" title="3">if iceServersJSON := os.Getenv("WEBRTC_ICE_SERVERS_JSON"); iceServersJSON != "" </span><span class="cov3" title="2">{
+                // Docker Compose / env files sometimes preserve surrounding quotes.
+                // Example (broken JSON): '[{"urls":["stun:..."]}]'
+                iceServersJSON = strings.Trim(iceServersJSON, "\"'")
+
+                var servers []ICEServer
+                if err := json.Unmarshal([]byte(iceServersJSON), &amp;servers); err != nil </span><span class="cov3" title="2">{
+                        // Backward/compat: some configs use an object wrapper: {"ice_servers": [...]}
+                        var wrapper struct {
+                                ICEServers []ICEServer `json:"ice_servers"`
+                        }
+                        if err2 := json.Unmarshal([]byte(iceServersJSON), &amp;wrapper); err2 != nil </span><span class="cov1" title="1">{
+                                return fmt.Errorf("config: invalid WEBRTC_ICE_SERVERS_JSON: %w", err)
+                        }</span>
+                        <span class="cov1" title="1">servers = wrapper.ICEServers</span>
+                }
+                <span class="cov1" title="1">if len(servers) &gt; 0 </span><span class="cov1" title="1">{
+                        c.WebRTC.ICEServers = servers
+                }</span>
+        }
+
+        <span class="cov3" title="2">if c.Translation.Provider == "" </span><span class="cov1" title="1">{
+                c.Translation.Provider = "volc_ast"
+        }</span>
+        <span class="cov3" title="2">if c.Translation.ChunkMS &lt;= 0 </span><span class="cov1" title="1">{
+                c.Translation.ChunkMS = 400
+        }</span>
+        <span class="cov3" title="2">if c.Translation.PartialDebounceMS &lt;= 0 </span><span class="cov1" title="1">{
+                c.Translation.PartialDebounceMS = 600
+        }</span>
+        <span class="cov3" title="2">if c.Translation.MaxSessionsPerUser &lt;= 0 </span><span class="cov1" title="1">{
+                c.Translation.MaxSessionsPerUser = 2
+        }</span>
+        <span class="cov3" title="2">if c.Translation.VolcAST.WSURL == "" </span><span class="cov1" title="1">{
+                c.Translation.VolcAST.WSURL = "wss://openspeech.bytedance.com/api/v4/ast/v2/translate"
+        }</span>
+        <span class="cov3" title="2">if c.Translation.VolcAST.ResourceID == "" </span><span class="cov1" title="1">{
+                c.Translation.VolcAST.ResourceID = "volc.service_type.10053"
+        }</span>
+
+        // 支持环境变量覆盖翻译配置
+        // Support environment variables override translation config
+        <span class="cov3" title="2">if enabled, ok, err := parseBoolEnv("TRANSLATION_ENABLED"); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span> else<span class="cov3" title="2"> if ok </span><span class="cov1" title="1">{
+                c.Translation.Enabled = enabled
+        }</span>
+        <span class="cov3" title="2">if provider := os.Getenv("TRANSLATION_PROVIDER"); provider != "" </span><span class="cov1" title="1">{
+                c.Translation.Provider = provider
+        }</span>
+        <span class="cov3" title="2">if chunkMS, ok, err := parseIntEnv("TRANSLATION_CHUNK_MS"); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span> else<span class="cov3" title="2"> if ok </span><span class="cov1" title="1">{
+                c.Translation.ChunkMS = chunkMS
+        }</span>
+        <span class="cov3" title="2">if partialDebounceMS, ok, err := parseIntEnv("TRANSLATION_PARTIAL_DEBOUNCE_MS"); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span> else<span class="cov3" title="2"> if ok </span><span class="cov1" title="1">{
+                c.Translation.PartialDebounceMS = partialDebounceMS
+        }</span>
+        <span class="cov3" title="2">if maxSessions, ok, err := parseIntEnv("TRANSLATION_MAX_SESSIONS_PER_USER"); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span> else<span class="cov3" title="2"> if ok </span><span class="cov1" title="1">{
+                c.Translation.MaxSessionsPerUser = maxSessions
+        }</span>
+
+        <span class="cov3" title="2">if volcWSURL := os.Getenv("VOLC_AST_WS_URL"); volcWSURL != "" </span><span class="cov3" title="2">{
+                c.Translation.VolcAST.WSURL = volcWSURL
+        }</span>
+        <span class="cov3" title="2">if volcAppKey := os.Getenv("VOLC_AST_APP_KEY"); volcAppKey != "" </span><span class="cov3" title="2">{
+                c.Translation.VolcAST.AppKey = volcAppKey
+        }</span>
+        <span class="cov3" title="2">if volcAccessKey := os.Getenv("VOLC_AST_ACCESS_KEY"); volcAccessKey != "" </span><span class="cov3" title="2">{
+                c.Translation.VolcAST.AccessKey = volcAccessKey
+        }</span>
+        <span class="cov3" title="2">if volcResourceID := os.Getenv("VOLC_AST_RESOURCE_ID"); volcResourceID != "" </span><span class="cov3" title="2">{
+                c.Translation.VolcAST.ResourceID = volcResourceID
+        }</span>
+        <span class="cov3" title="2">if volcAppID := os.Getenv("VOLC_AST_APP_ID"); volcAppID != "" </span><span class="cov1" title="1">{
+                c.Translation.VolcAST.AppID = volcAppID
+        }</span>
+
+        <span class="cov3" title="2">if c.JWT.Secret == "" </span><span class="cov1" title="1">{
+                return errors.New("config: jwt.secret must not be empty")
+        }</span>
+
+        <span class="cov1" title="1">return nil</span>
+}
+
+func parseBoolEnv(key string) (bool, bool, error) <span class="cov8" title="7">{
+        raw := strings.TrimSpace(os.Getenv(key))
+        if raw == "" </span><span class="cov3" title="2">{
+                return false, false, nil
+        }</span>
+
+        <span class="cov7" title="5">switch strings.ToLower(raw) </span>{
+        case "1", "true", "yes", "on":<span class="cov5" title="3">
+                return true, true, nil</span>
+        case "0", "false", "no", "off":<span class="cov1" title="1">
+                return false, true, nil</span>
+        default:<span class="cov1" title="1">
+                return false, true, fmt.Errorf("config: invalid %s value: %s", key, raw)</span>
+        }
+}
+
+func parseIntEnv(key string) (int, bool, error) <span class="cov10" title="9">{
+        raw := strings.TrimSpace(os.Getenv(key))
+        if raw == "" </span><span class="cov6" title="4">{
+                return 0, false, nil
+        }</span>
+        <span class="cov7" title="5">value, err := strconv.Atoi(raw)
+        if err != nil </span><span class="cov1" title="1">{
+                return 0, true, fmt.Errorf("config: invalid %s value: %w", key, err)
+        }</span>
+        <span class="cov6" title="4">return value, true, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package contact
+
+import (
+        "context"
+
+        "gorm.io/gorm"
+
+        "github.com/allcallall/backend/internal/models"
+)
+
+// Repository 联系人与关系数据访问
+// Repository handles database operations for contacts.
+type Repository struct {
+        db *gorm.DB
+}
+
+// NewRepository 构造函数
+func NewRepository(db *gorm.DB) *Repository <span class="cov6" title="2">{
+        return &amp;Repository{db: db}
+}</span>
+
+// AddContact 创建联系人关系
+func (r *Repository) AddContact(ctx context.Context, ownerID, contactID uint64) error <span class="cov6" title="2">{
+        contact := &amp;models.Contact{
+                OwnerID:   ownerID,
+                ContactID: contactID,
+        }
+        return r.db.WithContext(ctx).Create(contact).Error
+}</span>
+
+// RemoveContact 删除联系人关系
+func (r *Repository) RemoveContact(ctx context.Context, ownerID, contactID uint64) error <span class="cov6" title="2">{
+        return r.db.WithContext(ctx).
+                Where("owner_id = ? AND contact_id = ?", ownerID, contactID).
+                Delete(&amp;models.Contact{}).Error
+}</span>
+
+// ContactExists 检查联系人是否存在
+func (r *Repository) ContactExists(ctx context.Context, ownerID, contactID uint64) (bool, error) <span class="cov10" title="3">{
+        var count int64
+        err := r.db.WithContext(ctx).
+                Model(&amp;models.Contact{}).
+                Where("owner_id = ? AND contact_id = ?", ownerID, contactID).
+                Count(&amp;count).Error
+        return count &gt; 0, err
+}</span>
+
+// ListContacts 列出联系人（返回用户信息）
+func (r *Repository) ListContacts(ctx context.Context, ownerID uint64) ([]models.User, error) <span class="cov6" title="2">{
+        var users []models.User
+        err := r.db.WithContext(ctx).
+                Table("contacts").
+                Select("users.*").
+                Joins("JOIN users ON contacts.contact_id = users.id").
+                Where("contacts.owner_id = ?", ownerID).
+                Order("users.display_name ASC").
+                Find(&amp;users).Error
+        return users, err
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package contact
+
+import (
+        "context"
+        "errors"
+
+        "github.com/allcallall/backend/internal/models"
+        "github.com/allcallall/backend/internal/user"
+)
+
+// Service 联系人业务逻辑
+// Service coordinates contact operations with user service.
+type Service struct {
+        repo  *Repository
+        users *user.Service
+}
+
+// NewService 构造函数
+func NewService(repo *Repository, users *user.Service) *Service <span class="cov5" title="2">{
+        return &amp;Service{
+                repo:  repo,
+                users: users,
+        }
+}</span>
+
+// ErrContactExists 联系人已存在
+var ErrContactExists = errors.New("contact already exists")
+
+// ErrSelfContact 不能添加自己为联系人
+var ErrSelfContact = errors.New("cannot add yourself as contact")
+
+// AddByEmail 通过邮箱添加联系人
+func (s *Service) AddByEmail(ctx context.Context, ownerID uint64, ownerEmail, targetEmail string) error <span class="cov10" title="4">{
+        target, err := s.users.GetByEmail(ctx, targetEmail)
+        if err != nil </span><span class="cov1" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="3">if target.ID == ownerID </span><span class="cov1" title="1">{
+                return ErrSelfContact
+        }</span>
+
+        <span class="cov5" title="2">exists, err := s.repo.ContactExists(ctx, ownerID, target.ID)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov5" title="2">if exists </span><span class="cov1" title="1">{
+                return ErrContactExists
+        }</span>
+
+        <span class="cov1" title="1">return s.repo.AddContact(ctx, ownerID, target.ID)</span>
+}
+
+// Remove 删除联系人
+func (s *Service) Remove(ctx context.Context, ownerID, contactID uint64) error <span class="cov1" title="1">{
+        return s.repo.RemoveContact(ctx, ownerID, contactID)
+}</span>
+
+// List 列出所有联系人
+func (s *Service) List(ctx context.Context, ownerID uint64) ([]models.User, error) <span class="cov1" title="1">{
+        return s.repo.ListContacts(ctx, ownerID)
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package fcm
+
+import (
+        "context"
+
+        "github.com/rs/zerolog"
+)
+
+// Manager handles Firebase Cloud Messaging operations
+type Manager struct {
+        logger zerolog.Logger
+}
+
+// NewManager creates a new FCM manager
+func NewManager(logger zerolog.Logger) *Manager <span class="cov1" title="1">{
+        return &amp;Manager{
+                logger: logger.With().Str("component", "fcm_manager").Logger(),
+        }
+}</span>
+
+// SendCallNotification sends an incoming call notification
+func (m *Manager) SendCallNotification(ctx context.Context, fcmToken string, fromEmail string, displayName string, callID string) error <span class="cov10" title="2">{
+        if fcmToken == "" </span><span class="cov1" title="1">{
+                m.logger.Debug().Str("from", fromEmail).Msg("fcm token is empty, skipping notification")
+                return nil
+        }</span>
+
+        <span class="cov1" title="1">m.logger.Info().
+                Str("from", fromEmail).
+                Str("call_id", callID).
+                Msg("call notification would be sent (Firebase SDK not yet configured)")
+
+        return nil</span>
+}
+
+// SendMissedCallNotification sends a missed call notification
+func (m *Manager) SendMissedCallNotification(ctx context.Context, fcmToken string, fromEmail string, displayName string) error <span class="cov10" title="2">{
+        if fcmToken == "" </span><span class="cov1" title="1">{
+                m.logger.Debug().Str("from", fromEmail).Msg("fcm token is empty, skipping notification")
+                return nil
+        }</span>
+
+        <span class="cov1" title="1">m.logger.Info().
+                Str("from", fromEmail).
+                Msg("missed call notification would be sent (Firebase SDK not yet configured)")
+
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package handlers
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+        "github.com/rs/zerolog"
+
+        "github.com/allcallall/backend/internal/auth"
+        "github.com/allcallall/backend/internal/models"
+        "github.com/allcallall/backend/internal/user"
+)
+
+// AuthHandler 认证处理器
+// AuthHandler exposes registration and login endpoints.
+type AuthHandler struct {
+        logger     zerolog.Logger
+        users      *user.Service
+        jwtManager *auth.Manager
+}
+
+// NewAuthHandler 构造函数
+// NewAuthHandler creates an AuthHandler.
+func NewAuthHandler(log zerolog.Logger, users *user.Service, jwt *auth.Manager) *AuthHandler <span class="cov10" title="8">{
+        return &amp;AuthHandler{
+                logger:     log.With().Str("component", "auth_handler").Logger(),
+                users:      users,
+                jwtManager: jwt,
+        }
+}</span>
+
+type registerRequest struct {
+        Email       string `json:"email" binding:"required,email"`
+        Password    string `json:"password" binding:"required,min=8"`
+        DisplayName string `json:"display_name" binding:"required"`
+}
+
+type authResponse struct {
+        User        userDTO `json:"user"`
+        AccessToken string  `json:"access_token"`
+}
+
+type loginRequest struct {
+        Email    string `json:"email" binding:"required,email"`
+        Password string `json:"password" binding:"required"`
+}
+
+type userDTO struct {
+        ID          uint64 `json:"id"`
+        Email       string `json:"email"`
+        DisplayName string `json:"display_name"`
+}
+
+func toUserDTO(u *models.User) userDTO <span class="cov4" title="2">{
+        return userDTO{
+                ID:          u.ID,
+                Email:       u.Email,
+                DisplayName: u.DisplayName,
+        }
+}</span>
+
+// RegisterRoutes 注册路由
+// RegisterRoutes attaches auth routes.
+func (h *AuthHandler) RegisterRoutes(rg *gin.RouterGroup) <span class="cov10" title="8">{
+        rg.POST("/register", h.handleRegister)
+        rg.POST("/login", h.handleLogin)
+}</span>
+
+func (h *AuthHandler) handleRegister(c *gin.Context) <span class="cov7" title="4">{
+        var req registerRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov1" title="1">{
+                JSONError(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov5" title="3">userModel, err := h.users.Register(c.Request.Context(), user.RegisterInput{
+                Email:       req.Email,
+                Password:    req.Password,
+                DisplayName: req.DisplayName,
+        })
+        if err != nil </span><span class="cov4" title="2">{
+                switch err </span>{
+                case user.ErrEmailAlreadyUsed:<span class="cov1" title="1">
+                        JSONError(c, http.StatusConflict, "email already registered")</span>
+                default:<span class="cov1" title="1">
+                        h.logger.Error().Err(err).Msg("register failed")
+                        JSONError(c, http.StatusInternalServerError, "failed to register")</span>
+                }
+                <span class="cov4" title="2">return</span>
+        }
+
+        <span class="cov1" title="1">token, err := h.jwtManager.GenerateAccessToken(userModel.ID, userModel.Email)
+        if err != nil </span><span class="cov0" title="0">{
+                h.logger.Error().Err(err).Msg("generate token failed")
+                JSONError(c, http.StatusInternalServerError, "failed to generate token")
+                return
+        }</span>
+
+        <span class="cov1" title="1">JSONSuccess(c, http.StatusCreated, authResponse{
+                User:        toUserDTO(userModel),
+                AccessToken: token,
+        })</span>
+}
+
+func (h *AuthHandler) handleLogin(c *gin.Context) <span class="cov7" title="4">{
+        var req loginRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov1" title="1">{
+                JSONError(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov5" title="3">userModel, err := h.users.Authenticate(c.Request.Context(), user.LoginInput{
+                Email:    req.Email,
+                Password: req.Password,
+        })
+        if err != nil </span><span class="cov4" title="2">{
+                if err == user.ErrInvalidCredentials </span><span class="cov1" title="1">{
+                        JSONError(c, http.StatusUnauthorized, "invalid credentials")
+                        return
+                }</span>
+                <span class="cov1" title="1">h.logger.Error().Err(err).Msg("login failed")
+                JSONError(c, http.StatusInternalServerError, "failed to login")
+                return</span>
+        }
+
+        <span class="cov1" title="1">token, err := h.jwtManager.GenerateAccessToken(userModel.ID, userModel.Email)
+        if err != nil </span><span class="cov0" title="0">{
+                h.logger.Error().Err(err).Msg("generate token failed")
+                JSONError(c, http.StatusInternalServerError, "failed to generate token")
+                return
+        }</span>
+
+        <span class="cov1" title="1">JSONSuccess(c, http.StatusOK, authResponse{
+                User:        toUserDTO(userModel),
+                AccessToken: token,
+        })</span>
+}
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package handlers
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+        "github.com/rs/zerolog"
+
+        "github.com/allcallall/backend/internal/mail"
+)
+
+// EmailHandler 邮件处理器
+// EmailHandler handles email-related API endpoints
+type EmailHandler struct {
+        logger                  zerolog.Logger
+        verificationCodeService *mail.VerificationCodeService
+}
+
+// NewEmailHandler 创建邮件处理器
+// NewEmailHandler creates a new email handler
+func NewEmailHandler(
+        logger zerolog.Logger,
+        verificationCodeService *mail.VerificationCodeService,
+) *EmailHandler <span class="cov8" title="1">{
+        return &amp;EmailHandler{
+                logger:                  logger.With().Str("component", "email_handler").Logger(),
+                verificationCodeService: verificationCodeService,
+        }
+}</span>
+
+// sendVerificationCodeRequest 发送验证码请求
+type sendVerificationCodeRequest struct {
+        Email string `json:"email" binding:"required,email"`
+}
+
+// verifyCodeRequest 验证码校验请求
+type verifyCodeRequest struct {
+        Email string `json:"email" binding:"required,email"`
+        Code  string `json:"code" binding:"required,len=6,numeric"`
+}
+
+// successResponse 通用成功响应
+type successResponse struct {
+        Message string `json:"message"`
+}
+
+// RegisterRoutes 注册路由
+// RegisterRoutes registers email-related endpoints
+func (h *EmailHandler) RegisterRoutes(rg *gin.RouterGroup) <span class="cov8" title="1">{
+        rg.POST("/email/send-verification-code", h.handleSendVerificationCode)
+        rg.POST("/email/verify-code", h.handleVerifyCode)
+}</span>
+
+// handleSendVerificationCode 发送验证码
+// handleSendVerificationCode sends a verification code to the provided email
+func (h *EmailHandler) handleSendVerificationCode(c *gin.Context) <span class="cov8" title="1">{
+        var req sendVerificationCodeRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov8" title="1">{
+                JSONError(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov0" title="0">if err := h.verificationCodeService.GenerateAndSend(req.Email); err != nil </span><span class="cov0" title="0">{
+                h.logger.Warn().Err(err).Str("email", req.Email).Msg("send verification code failed")
+
+                // 根据错误类型返回不同的状态码
+                switch err.Error() </span>{
+                case "email is temporarily blocked, please try again later":<span class="cov0" title="0">
+                        JSONError(c, http.StatusTooManyRequests, err.Error())</span>
+                default:<span class="cov0" title="0">
+                        JSONError(c, http.StatusInternalServerError, "failed to send verification code")</span>
+                }
+                <span class="cov0" title="0">return</span>
+        }
+
+        <span class="cov0" title="0">JSONSuccess(c, http.StatusOK, successResponse{
+                Message: "verification code sent successfully",
+        })</span>
+}
+
+// handleVerifyCode 验证码校验
+// handleVerifyCode verifies the provided code
+func (h *EmailHandler) handleVerifyCode(c *gin.Context) <span class="cov8" title="1">{
+        var req verifyCodeRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov8" title="1">{
+                JSONError(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov0" title="0">if err := h.verificationCodeService.Verify(req.Email, req.Code); err != nil </span><span class="cov0" title="0">{
+                h.logger.Warn().Err(err).Str("email", req.Email).Msg("verification code check failed")
+
+                // 根据错误类型返回不同的状态码
+                switch err.Error() </span>{
+                case "too many attempts, please try again later":<span class="cov0" title="0">
+                        JSONError(c, http.StatusTooManyRequests, err.Error())</span>
+                case "verification code has expired":<span class="cov0" title="0">
+                        JSONError(c, http.StatusUnauthorized, err.Error())</span>
+                case "verification code is incorrect":<span class="cov0" title="0">
+                        JSONError(c, http.StatusUnauthorized, err.Error())</span>
+                default:<span class="cov0" title="0">
+                        JSONError(c, http.StatusUnauthorized, err.Error())</span>
+                }
+                <span class="cov0" title="0">return</span>
+        }
+
+        <span class="cov0" title="0">JSONSuccess(c, http.StatusOK, successResponse{
+                Message: "email verified successfully",
+        })</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package handlers
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+)
+
+// JSONError 返回标准错误响应
+// JSONError sends a JSON error message with status code.
+func JSONError(c *gin.Context, status int, message string) <span class="cov10" title="32">{
+        c.JSON(status, gin.H{
+                "error":   message,
+                "success": false,
+        })
+}</span>
+
+// JSONSuccess 返回成功响应
+// JSONSuccess sends JSON with optional data.
+func JSONSuccess(c *gin.Context, status int, data interface{}) <span class="cov7" title="14">{
+        if data == nil </span><span class="cov1" title="1">{
+                data = gin.H{"success": true}
+        }</span>
+        <span class="cov7" title="14">if status == 0 </span><span class="cov1" title="1">{
+                status = http.StatusOK
+        }</span>
+        <span class="cov7" title="14">c.JSON(status, data)</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package handlers
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+        "github.com/gorilla/websocket"
+        "github.com/rs/zerolog"
+
+        "github.com/allcallall/backend/internal/auth"
+        "github.com/allcallall/backend/internal/signaling"
+)
+
+// SignalingHandler 信令处理器
+// SignalingHandler upgrades HTTP requests to WebSocket for signaling.
+type SignalingHandler struct {
+        logger   zerolog.Logger
+        hub      *signaling.Hub
+        upgrader websocket.Upgrader
+}
+
+// NewSignalingHandler 构造函数
+// NewSignalingHandler creates a SignalingHandler.
+func NewSignalingHandler(log zerolog.Logger, hub *signaling.Hub) *SignalingHandler <span class="cov10" title="2">{
+        return &amp;SignalingHandler{
+                logger: log.With().Str("component", "signaling_handler").Logger(),
+                hub:    hub,
+                upgrader: websocket.Upgrader{
+                        CheckOrigin: func(r *http.Request) bool </span><span class="cov0" title="0">{ return true }</span>,
+                },
+        }
+}
+
+// Handle 升级 WebSocket
+// Handle upgrades request to WebSocket and delegates to hub.
+func (h *SignalingHandler) Handle(c *gin.Context) <span class="cov10" title="2">{
+        // 中间件已经验证了 token（从 Authorization 第一个请求头或查询参数）
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov1" title="1">{
+                // 正常不会走到这里，因为中间件已经随之丢弃此请求
+                h.logger.Error().Str("path", c.Request.URL.Path).Str("query", c.Request.URL.RawQuery).Msg("no auth claims in context")
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov1" title="1">h.logger.Info().Str("email", claims.Email).Msg("websocket upgrade attempt")
+
+        conn, err := h.upgrader.Upgrade(c.Writer, c.Request, nil)
+        if err != nil </span><span class="cov1" title="1">{
+                h.logger.Error().Err(err).Msg("failed to upgrade websocket")
+                return
+        }</span>
+
+        <span class="cov0" title="0">h.logger.Info().Str("email", claims.Email).Msg("websocket connection established")
+        h.hub.HandleConnection(c.Request.Context(), claims.Email, conn)</span>
+}
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package handlers
+
+import (
+        "net/http"
+        "time"
+
+        "github.com/gin-gonic/gin"
+        "github.com/rs/zerolog"
+
+        "github.com/allcallall/backend/internal/auth"
+        "github.com/allcallall/backend/internal/signaling"
+)
+
+// SignalingPollHandler provides HTTPS-based signaling for proxy-restricted networks.
+type SignalingPollHandler struct {
+        logger zerolog.Logger
+        hub    *signaling.Hub
+}
+
+func NewSignalingPollHandler(log zerolog.Logger, hub *signaling.Hub) *SignalingPollHandler <span class="cov10" title="7">{
+        return &amp;SignalingPollHandler{
+                logger: log.With().Str("component", "signaling_poll_handler").Logger(),
+                hub:    hub,
+        }
+}</span>
+
+func (h *SignalingPollHandler) RegisterRoutes(group *gin.RouterGroup) <span class="cov10" title="7">{
+        group.POST("/signaling/send", h.Send)
+        group.GET("/signaling/poll", h.Poll)
+}</span>
+
+func (h *SignalingPollHandler) Send(c *gin.Context) <span class="cov6" title="3">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov6" title="3">data, err := c.GetRawData()
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusBadRequest, "invalid payload")
+                return
+        }</span>
+
+        // Reuse hub protocol rules and routing by publishing via Redis+queue.
+        // For HTTP mode we rely on the client's 'to' field; 'from' is derived from JWT.
+        <span class="cov6" title="3">if err := h.hub.HandleHTTPMessage(c.Request.Context(), claims.Email, data); err != nil </span><span class="cov4" title="2">{
+                h.logger.Warn().Err(err).Str("email", claims.Email).Msg("failed to handle http signaling send")
+                JSONError(c, http.StatusBadRequest, "failed to send message")
+                return
+        }</span>
+
+        <span class="cov1" title="1">c.JSON(http.StatusOK, gin.H{"ok": true})</span>
+}
+
+func (h *SignalingPollHandler) Poll(c *gin.Context) <span class="cov7" title="4">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov1" title="1">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        // Default 25s long-poll; cap at 60s.
+        <span class="cov6" title="3">timeout := 25 * time.Second
+        if raw := c.Query("timeout_ms"); raw != "" </span><span class="cov4" title="2">{
+                if ms, err := time.ParseDuration(raw + "ms"); err == nil </span><span class="cov1" title="1">{
+                        if ms &gt; 60*time.Second </span><span class="cov1" title="1">{
+                                ms = 60 * time.Second
+                        }</span>
+                        <span class="cov1" title="1">if ms &gt; 0 </span><span class="cov1" title="1">{
+                                timeout = ms
+                        }</span>
+                }
+        }
+
+        <span class="cov6" title="3">payload, ok, err := h.hub.Poll(c.Request.Context(), claims.Email, timeout)
+        if err != nil </span><span class="cov0" title="0">{
+                h.logger.Warn().Err(err).Str("email", claims.Email).Msg("failed to poll signaling queue")
+                JSONError(c, http.StatusInternalServerError, "poll failed")
+                return
+        }</span>
+        <span class="cov6" title="3">if !ok </span><span class="cov6" title="3">{
+                c.Status(http.StatusNoContent)
+                return
+        }</span>
+
+        <span class="cov0" title="0">c.Data(http.StatusOK, "application/json", payload)</span>
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package handlers
+
+import (
+        "context"
+        "encoding/json"
+        "errors"
+        "net/http"
+        "strings"
+        "time"
+
+        "github.com/gin-gonic/gin"
+        "github.com/gorilla/websocket"
+        "github.com/rs/zerolog"
+
+        "github.com/allcallall/backend/internal/auth"
+        "github.com/allcallall/backend/internal/signaling"
+        "github.com/allcallall/backend/internal/translation"
+)
+
+// SubtitleDispatcher 对端字幕分发接口
+// SubtitleDispatcher forwards final subtitles to remote peer.
+type SubtitleDispatcher interface {
+        DispatchSubtitle(ctx context.Context, fromEmail, toEmail, callID string, result translation.Result) error
+}
+
+// TranslationWSHandler 翻译 WebSocket 处理器
+// TranslationWSHandler handles client translation websocket requests.
+type TranslationWSHandler struct {
+        logger     zerolog.Logger
+        service    *translation.Service
+        dispatcher SubtitleDispatcher
+        upgrader   websocket.Upgrader
+}
+
+// NewTranslationWSHandler 构造函数
+// NewTranslationWSHandler creates handler with signaling-hub dispatcher.
+func NewTranslationWSHandler(log zerolog.Logger, service *translation.Service, hub *signaling.Hub) *TranslationWSHandler <span class="cov0" title="0">{
+        var dispatcher SubtitleDispatcher
+        if hub != nil </span><span class="cov0" title="0">{
+                dispatcher = &amp;hubSubtitleDispatcher{hub: hub}
+        }</span>
+        <span class="cov0" title="0">return NewTranslationWSHandlerWithDispatcher(log, service, dispatcher)</span>
+}
+
+// NewTranslationWSHandlerWithDispatcher 构造函数（可注入自定义分发器）
+// NewTranslationWSHandlerWithDispatcher creates handler with custom dispatcher.
+func NewTranslationWSHandlerWithDispatcher(log zerolog.Logger, service *translation.Service, dispatcher SubtitleDispatcher) *TranslationWSHandler <span class="cov1" title="1">{
+        return &amp;TranslationWSHandler{
+                logger:     log.With().Str("component", "translation_ws_handler").Logger(),
+                service:    service,
+                dispatcher: dispatcher,
+                upgrader: websocket.Upgrader{
+                        CheckOrigin: func(r *http.Request) bool </span><span class="cov1" title="1">{ return true }</span>,
+                },
+        }
+}
+
+// Handle 升级并处理翻译 websocket 会话
+// Handle upgrades websocket and processes translation lifecycle.
+func (h *TranslationWSHandler) Handle(c *gin.Context) <span class="cov1" title="1">{
+        if h.service == nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusServiceUnavailable, "translation service not available")
+                return
+        }</span>
+
+        <span class="cov1" title="1">claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov1" title="1">conn, err := h.upgrader.Upgrade(c.Writer, c.Request, nil)
+        if err != nil </span><span class="cov0" title="0">{
+                h.logger.Warn().Err(err).Msg("failed to upgrade translation websocket")
+                return
+        }</span>
+        <span class="cov1" title="1">defer conn.Close()
+
+        outbound := make(chan []byte, 64)
+        writerDone := make(chan struct{})
+        go h.writeLoop(conn, outbound, writerDone)
+
+        sendJSON := func(v any) </span><span class="cov5" title="2">{
+                data, err := json.Marshal(v)
+                if err != nil </span><span class="cov0" title="0">{
+                        h.logger.Warn().Err(err).Msg("marshal outbound translation payload failed")
+                        return
+                }</span>
+                <span class="cov5" title="2">select </span>{
+                case outbound &lt;- data:<span class="cov5" title="2"></span>
+                default:<span class="cov0" title="0">
+                        // 队列拥塞时优先保留最新消息。
+                        // Prefer latest messages when queue is congested.
+                        select </span>{
+                        case &lt;-outbound:<span class="cov0" title="0"></span>
+                        default:<span class="cov0" title="0"></span>
+                        }
+                        <span class="cov0" title="0">select </span>{
+                        case outbound &lt;- data:<span class="cov0" title="0"></span>
+                        default:<span class="cov0" title="0"></span>
+                        }
+                }
+        }
+
+        <span class="cov1" title="1">var currentSession *translation.Session
+        var eventCancel context.CancelFunc
+
+        stopSession := func() </span><span class="cov5" title="2">{
+                if eventCancel != nil </span><span class="cov1" title="1">{
+                        eventCancel()
+                        eventCancel = nil
+                }</span>
+                <span class="cov5" title="2">if currentSession != nil </span><span class="cov1" title="1">{
+                        _ = currentSession.Stop(context.Background())
+                        currentSession = nil
+                }</span>
+        }
+        <span class="cov1" title="1">defer stopSession()
+        defer close(outbound)
+
+        for </span><span class="cov10" title="4">{
+                _, data, err := conn.ReadMessage()
+                if err != nil </span><span class="cov1" title="1">{
+                        if !websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) </span><span class="cov1" title="1">{
+                                h.logger.Debug().Err(err).Str("email", claims.Email).Msg("translation websocket read closed")
+                        }</span>
+                        <span class="cov1" title="1">break</span>
+                }
+
+                <span class="cov8" title="3">var msg translationClientMessage
+                if err := json.Unmarshal(data, &amp;msg); err != nil </span><span class="cov0" title="0">{
+                        sendJSON(translationErrorMessage("BAD_REQUEST", "invalid message format", false))
+                        continue</span>
+                }
+
+                <span class="cov8" title="3">switch strings.TrimSpace(msg.Type) </span>{
+                case "translation.start":<span class="cov1" title="1">
+                        stopSession()
+
+                        req := translation.StartRequest{
+                                CallID:     strings.TrimSpace(msg.CallID),
+                                To:         strings.TrimSpace(msg.To),
+                                SourceLang: strings.TrimSpace(msg.SourceLang),
+                                TargetLang: strings.TrimSpace(msg.TargetLang),
+                                ChunkMS:    msg.ChunkMS,
+                        }
+                        if req.ChunkMS &lt;= 0 </span><span class="cov0" title="0">{
+                                req.ChunkMS = 400
+                        }</span>
+
+                        <span class="cov1" title="1">session, err := h.service.StartSession(c.Request.Context(), claims.Email, req)
+                        if err != nil </span><span class="cov0" title="0">{
+                                h.logger.Warn().Err(err).Str("email", claims.Email).Msg("start translation session failed")
+                                sendJSON(translationErrorMessage("START_FAILED", err.Error(), isRecoverableStartError(err)))
+                                continue</span>
+                        }
+
+                        <span class="cov1" title="1">currentSession = session
+                        evtCtx, cancel := context.WithCancel(context.Background())
+                        eventCancel = cancel
+                        go h.forwardSessionEvents(evtCtx, claims.Email, currentSession, sendJSON)
+
+                        sendJSON(map[string]any{
+                                "type":       "translation.ack",
+                                "session_id": currentSession.ID,
+                        })</span>
+
+                case "translation.audio":<span class="cov1" title="1">
+                        if currentSession == nil </span><span class="cov0" title="0">{
+                                sendJSON(translationErrorMessage("SESSION_NOT_STARTED", "translation session not started", true))
+                                continue</span>
+                        }
+
+                        <span class="cov1" title="1">chunk := translation.AudioChunk{
+                                Seq:         msg.Seq,
+                                PCM16Base64: msg.PCM16Base64,
+                                SampleRate:  msg.SampleRate,
+                                Channels:    msg.Channels,
+                                TimestampMS: msg.TimestampMS,
+                        }
+                        if chunk.SampleRate &lt;= 0 </span><span class="cov0" title="0">{
+                                chunk.SampleRate = 16000
+                        }</span>
+                        <span class="cov1" title="1">if chunk.Channels &lt;= 0 </span><span class="cov0" title="0">{
+                                chunk.Channels = 1
+                        }</span>
+                        <span class="cov1" title="1">if chunk.TimestampMS &lt;= 0 </span><span class="cov0" title="0">{
+                                chunk.TimestampMS = time.Now().UnixMilli()
+                        }</span>
+                        <span class="cov1" title="1">if strings.TrimSpace(chunk.PCM16Base64) == "" </span><span class="cov0" title="0">{
+                                sendJSON(translationErrorMessage("BAD_AUDIO", "pcm16_base64 is required", true))
+                                continue</span>
+                        }
+
+                        <span class="cov1" title="1">if err := currentSession.SendAudio(c.Request.Context(), chunk); err != nil </span><span class="cov0" title="0">{
+                                h.logger.Warn().Err(err).Str("session_id", currentSession.ID).Msg("send translation audio failed")
+                                sendJSON(translationErrorMessage("PROVIDER_ERROR", err.Error(), true))
+                        }</span>
+
+                case "translation.stop":<span class="cov1" title="1">
+                        stopSession()</span>
+
+                default:<span class="cov0" title="0">
+                        sendJSON(translationErrorMessage("BAD_REQUEST", "unknown message type", false))</span>
+                }
+        }
+
+        <span class="cov1" title="1">&lt;-writerDone</span>
+}
+
+func (h *TranslationWSHandler) writeLoop(conn *websocket.Conn, outbound &lt;-chan []byte, done chan&lt;- struct{}) <span class="cov1" title="1">{
+        defer close(done)
+        for msg := range outbound </span><span class="cov5" title="2">{
+                conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
+                if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil </span><span class="cov0" title="0">{
+                        return
+                }</span>
+        }
+}
+
+func (h *TranslationWSHandler) forwardSessionEvents(
+        ctx context.Context,
+        fromEmail string,
+        session *translation.Session,
+        sendJSON func(v any),
+) <span class="cov1" title="1">{
+        for </span><span class="cov5" title="2">{
+                select </span>{
+                case &lt;-ctx.Done():<span class="cov1" title="1">
+                        return</span>
+                case evt, ok := &lt;-session.Events():<span class="cov1" title="1">
+                        if !ok </span><span class="cov0" title="0">{
+                                return
+                        }</span>
+
+                        <span class="cov1" title="1">if evt.Error != nil </span><span class="cov0" title="0">{
+                                sendJSON(translationErrorMessage(evt.Error.Code, evt.Error.Message, evt.Error.Recoverable))
+                                continue</span>
+                        }
+                        <span class="cov1" title="1">if evt.Result == nil </span><span class="cov0" title="0">{
+                                continue</span>
+                        }
+
+                        <span class="cov1" title="1">eventType := "translation.partial"
+                        if evt.Result.IsFinal </span><span class="cov1" title="1">{
+                                eventType = "translation.final"
+                        }</span>
+
+                        <span class="cov1" title="1">sendJSON(map[string]any{
+                                "type":            eventType,
+                                "session_id":      session.ID,
+                                "segment_id":      evt.Result.SegmentID,
+                                "revision":        evt.Result.Revision,
+                                "is_final":        evt.Result.IsFinal,
+                                "original_text":   evt.Result.OriginalText,
+                                "translated_text": evt.Result.TranslatedText,
+                                "timestamp_ms":    evt.Result.TimestampMS,
+                                "latency_ms":      evt.Result.LatencyMS,
+                        })
+
+                        if evt.Result.IsFinal &amp;&amp; h.dispatcher != nil </span><span class="cov1" title="1">{
+                                if err := h.dispatcher.DispatchSubtitle(ctx, fromEmail, session.To, session.CallID, *evt.Result); err != nil </span><span class="cov0" title="0">{
+                                        h.logger.Warn().
+                                                Err(err).
+                                                Str("session_id", session.ID).
+                                                Str("call_id", session.CallID).
+                                                Str("to", session.To).
+                                                Msg("dispatch call.subtitle failed")
+                                }</span>
+                        }
+                }
+        }
+}
+
+func isRecoverableStartError(err error) bool <span class="cov0" title="0">{
+        if errors.Is(err, translation.ErrSessionLimitExceeded) </span><span class="cov0" title="0">{
+                return true
+        }</span>
+        <span class="cov0" title="0">if errors.Is(err, translation.ErrBadStartRequest) </span><span class="cov0" title="0">{
+                return false
+        }</span>
+        <span class="cov0" title="0">return true</span>
+}
+
+func translationErrorMessage(code, message string, recoverable bool) map[string]any <span class="cov0" title="0">{
+        if strings.TrimSpace(code) == "" </span><span class="cov0" title="0">{
+                code = "PROVIDER_ERROR"
+        }</span>
+        <span class="cov0" title="0">if strings.TrimSpace(message) == "" </span><span class="cov0" title="0">{
+                message = "translation error"
+        }</span>
+        <span class="cov0" title="0">return map[string]any{
+                "type":        "translation.error",
+                "code":        code,
+                "message":     message,
+                "recoverable": recoverable,
+        }</span>
+}
+
+type translationClientMessage struct {
+        Type       string `json:"type"`
+        CallID     string `json:"call_id"`
+        To         string `json:"to"`
+        SourceLang string `json:"source_lang"`
+        TargetLang string `json:"target_lang"`
+        ChunkMS    int    `json:"chunk_ms"`
+
+        Seq         int64  `json:"seq"`
+        PCM16Base64 string `json:"pcm16_base64"`
+        SampleRate  int    `json:"sample_rate"`
+        Channels    int    `json:"channels"`
+        TimestampMS int64  `json:"timestamp_ms"`
+}
+
+type hubSubtitleDispatcher struct {
+        hub *signaling.Hub
+}
+
+func (d *hubSubtitleDispatcher) DispatchSubtitle(
+        ctx context.Context,
+        fromEmail, toEmail, callID string,
+        result translation.Result,
+) error <span class="cov0" title="0">{
+        if d.hub == nil </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        <span class="cov0" title="0">payloadBytes, err := json.Marshal(map[string]any{
+                "segment_id":      result.SegmentID,
+                "revision":        result.Revision,
+                "is_final":        true,
+                "original_text":   result.OriginalText,
+                "translated_text": result.TranslatedText,
+                "timestamp_ms":    result.TimestampMS,
+                "source":          "online",
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov0" title="0">msg := signaling.SignalMessage{
+                Type:    "call.subtitle",
+                CallID:  callID,
+                To:      toEmail,
+                Payload: payloadBytes,
+        }
+        body, err := json.Marshal(msg)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">return d.hub.HandleHTTPMessage(ctx, fromEmail, body)</span>
+}
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package handlers
+
+import (
+        "net/http"
+        "strconv"
+        "strings"
+
+        "github.com/gin-gonic/gin"
+        "github.com/rs/zerolog"
+
+        "github.com/allcallall/backend/internal/auth"
+        "github.com/allcallall/backend/internal/contact"
+        "github.com/allcallall/backend/internal/presence"
+        "github.com/allcallall/backend/internal/user"
+)
+
+// UserHandler 用户相关接口
+// UserHandler serves user-focused endpoints.
+type UserHandler struct {
+        logger   zerolog.Logger
+        users    *user.Service
+        presence *presence.Manager
+        contacts *contact.Service
+}
+
+// NewUserHandler 构造函数
+// NewUserHandler creates a UserHandler.
+func NewUserHandler(log zerolog.Logger, users *user.Service, presence *presence.Manager, contacts *contact.Service) *UserHandler <span class="cov10" title="29">{
+        return &amp;UserHandler{
+                logger:   log.With().Str("component", "user_handler").Logger(),
+                users:    users,
+                presence: presence,
+                contacts: contacts,
+        }
+}</span>
+
+// RegisterRoutes 注册用户路由
+// RegisterRoutes attaches user routes.
+func (h *UserHandler) RegisterRoutes(rg *gin.RouterGroup) <span class="cov10" title="29">{
+        rg.GET("/me", h.handleMe)
+        rg.GET("/search", h.handleSearch)
+        rg.GET("/presence", h.handlePresence)
+        rg.POST("/change-password", h.handleChangePassword)
+        rg.POST("/fcm-token", h.handleSaveFCMToken)
+
+        contactsGroup := rg.Group("/contacts")
+        contactsGroup.GET("", h.handleListContacts)
+        contactsGroup.POST("", h.handleAddContact)
+        contactsGroup.DELETE("/:id", h.handleRemoveContact)
+}</span>
+
+func (h *UserHandler) handleMe(c *gin.Context) <span class="cov3" title="3">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov1" title="1">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov2" title="2">userModel, err := h.users.GetByID(c.Request.Context(), claims.UserID)
+        if err != nil </span><span class="cov1" title="1">{
+                h.logger.Error().Err(err).Uint64("user_id", claims.UserID).Msg("failed to load profile")
+                JSONError(c, http.StatusInternalServerError, "failed to load profile")
+                return
+        }</span>
+
+        <span class="cov1" title="1">JSONSuccess(c, http.StatusOK, gin.H{
+                "user": gin.H{
+                        "id":           userModel.ID,
+                        "email":        userModel.Email,
+                        "display_name": userModel.DisplayName,
+                },
+        })</span>
+}
+
+func (h *UserHandler) handleSearch(c *gin.Context) <span class="cov3" title="3">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov3" title="3">query := strings.TrimSpace(c.Query("q"))
+        if query == "" </span><span class="cov1" title="1">{
+                JSONSuccess(c, http.StatusOK, gin.H{"results": []userDTO{}})
+                return
+        }</span>
+
+        <span class="cov2" title="2">results, err := h.users.SearchByEmail(c.Request.Context(), query, 10)
+        if err != nil </span><span class="cov1" title="1">{
+                h.logger.Error().Err(err).Msg("search users failed")
+                JSONError(c, http.StatusInternalServerError, "failed to search users")
+                return
+        }</span>
+
+        <span class="cov1" title="1">response := make([]userDTO, 0, len(results))
+        for _, u := range results </span><span class="cov2" title="2">{
+                // 不返回自己
+                if u.Email == claims.Email </span><span class="cov1" title="1">{
+                        continue</span>
+                }
+                <span class="cov1" title="1">response = append(response, userDTO{
+                        ID:          u.ID,
+                        Email:       u.Email,
+                        DisplayName: u.DisplayName,
+                })</span>
+        }
+
+        <span class="cov1" title="1">JSONSuccess(c, http.StatusOK, gin.H{"results": response})</span>
+}
+
+func (h *UserHandler) handlePresence(c *gin.Context) <span class="cov2" title="2">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov2" title="2">var emails []string
+        raw := strings.TrimSpace(c.Query("emails"))
+        if raw == "" </span><span class="cov1" title="1">{
+                emails = []string{claims.Email}
+        }</span> else<span class="cov1" title="1"> {
+                for _, part := range strings.Split(raw, ",") </span><span class="cov2" title="2">{
+                        email := strings.TrimSpace(part)
+                        if email != "" </span><span class="cov2" title="2">{
+                                emails = append(emails, email)
+                        }</span>
+                }
+                <span class="cov1" title="1">if len(emails) == 0 </span><span class="cov0" title="0">{
+                        emails = []string{claims.Email}
+                }</span>
+        }
+
+        <span class="cov2" title="2">statuses, err := h.presence.GetStatuses(c.Request.Context(), emails)
+        if err != nil </span><span class="cov0" title="0">{
+                h.logger.Error().Err(err).Msg("failed to fetch presence")
+                JSONError(c, http.StatusInternalServerError, "failed to fetch presence")
+                return
+        }</span>
+
+        <span class="cov2" title="2">resp := make([]gin.H, 0, len(statuses))
+        for _, email := range emails </span><span class="cov3" title="3">{
+                status := statuses[email]
+                resp = append(resp, gin.H{
+                        "email":     status.Email,
+                        "online":    status.Online,
+                        "last_seen": status.LastSeen,
+                })
+        }</span>
+
+        <span class="cov2" title="2">JSONSuccess(c, http.StatusOK, gin.H{"presence": resp})</span>
+}
+
+type addContactRequest struct {
+        Email string `json:"email" binding:"required,email"`
+}
+
+func (h *UserHandler) handleAddContact(c *gin.Context) <span class="cov4" title="4">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov4" title="4">var req addContactRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov4" title="4">if err := h.contacts.AddByEmail(c.Request.Context(), claims.UserID, claims.Email, strings.TrimSpace(req.Email)); err != nil </span><span class="cov3" title="3">{
+                switch err </span>{
+                case contact.ErrContactExists:<span class="cov1" title="1">
+                        JSONError(c, http.StatusConflict, "contact already exists")</span>
+                case contact.ErrSelfContact:<span class="cov1" title="1">
+                        JSONError(c, http.StatusBadRequest, "cannot add yourself")</span>
+                default:<span class="cov1" title="1">
+                        h.logger.Error().Err(err).Msg("add contact failed")
+                        JSONError(c, http.StatusInternalServerError, "failed to add contact")</span>
+                }
+                <span class="cov3" title="3">return</span>
+        }
+
+        <span class="cov1" title="1">JSONSuccess(c, http.StatusCreated, gin.H{"success": true})</span>
+}
+
+func (h *UserHandler) handleListContacts(c *gin.Context) <span class="cov2" title="2">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov2" title="2">contacts, err := h.contacts.List(c.Request.Context(), claims.UserID)
+        if err != nil </span><span class="cov1" title="1">{
+                h.logger.Error().Err(err).Msg("list contacts failed")
+                JSONError(c, http.StatusInternalServerError, "failed to list contacts")
+                return
+        }</span>
+
+        <span class="cov1" title="1">response := make([]userDTO, 0, len(contacts))
+        for _, u := range contacts </span><span class="cov1" title="1">{
+                response = append(response, userDTO{
+                        ID:          u.ID,
+                        Email:       u.Email,
+                        DisplayName: u.DisplayName,
+                })
+        }</span>
+
+        <span class="cov1" title="1">JSONSuccess(c, http.StatusOK, gin.H{"contacts": response})</span>
+}
+
+func (h *UserHandler) handleRemoveContact(c *gin.Context) <span class="cov3" title="3">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov3" title="3">idParam := c.Param("id")
+        contactID, err := strconv.ParseUint(idParam, 10, 64)
+        if err != nil </span><span class="cov1" title="1">{
+                JSONError(c, http.StatusBadRequest, "invalid contact id")
+                return
+        }</span>
+
+        <span class="cov2" title="2">if err := h.contacts.Remove(c.Request.Context(), claims.UserID, contactID); err != nil </span><span class="cov1" title="1">{
+                h.logger.Error().Err(err).Uint64("contact_id", contactID).Msg("remove contact failed")
+                JSONError(c, http.StatusInternalServerError, "failed to remove contact")
+                return
+        }</span>
+
+        <span class="cov1" title="1">JSONSuccess(c, http.StatusOK, gin.H{"success": true})</span>
+}
+
+type changePasswordRequest struct {
+        OldPassword     string `json:"old_password" binding:"required"`
+        NewPassword     string `json:"new_password" binding:"required"`
+        ConfirmPassword string `json:"confirm_password" binding:"required"`
+}
+
+func (h *UserHandler) handleChangePassword(c *gin.Context) <span class="cov6" title="9">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov6" title="9">var req changePasswordRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov6" title="9">err = h.users.ChangePassword(c.Request.Context(), claims.UserID, user.ChangePasswordInput{
+                OldPassword:     req.OldPassword,
+                NewPassword:     req.NewPassword,
+                ConfirmPassword: req.ConfirmPassword,
+        })
+
+        if err != nil </span><span class="cov6" title="8">{
+                switch err </span>{
+                case user.ErrInvalidCredentials:<span class="cov1" title="1">
+                        JSONError(c, http.StatusUnauthorized, "invalid old password")</span>
+                case user.ErrPasswordTooShort:<span class="cov1" title="1">
+                        JSONError(c, http.StatusBadRequest, "password must be at least 8 characters")</span>
+                case user.ErrPasswordTooLong:<span class="cov0" title="0">
+                        JSONError(c, http.StatusBadRequest, "password must be at most 128 characters")</span>
+                case user.ErrPasswordWeak:<span class="cov1" title="1">
+                        JSONError(c, http.StatusBadRequest, "password must contain both letters and numbers")</span>
+                case user.ErrSpecialCharacters:<span class="cov1" title="1">
+                        JSONError(c, http.StatusBadRequest, "password cannot contain special characters")</span>
+                case user.ErrPasswordMismatch:<span class="cov1" title="1">
+                        JSONError(c, http.StatusBadRequest, "new password and confirm password do not match")</span>
+                case user.ErrPasswordUnchanged:<span class="cov1" title="1">
+                        JSONError(c, http.StatusBadRequest, "new password must be different from old password")</span>
+                case user.ErrNotFound:<span class="cov1" title="1">
+                        JSONError(c, http.StatusNotFound, "user not found")</span>
+                default:<span class="cov1" title="1">
+                        h.logger.Error().Err(err).Msg("change password failed")
+                        JSONError(c, http.StatusInternalServerError, "failed to change password")</span>
+                }
+                <span class="cov6" title="8">return</span>
+        }
+
+        <span class="cov1" title="1">JSONSuccess(c, http.StatusOK, gin.H{"message": "password changed successfully"})</span>
+}
+
+type saveFCMTokenRequest struct {
+        FCMToken string `json:"fcm_token" binding:"required"`
+}
+
+func (h *UserHandler) handleSaveFCMToken(c *gin.Context) <span class="cov3" title="3">{
+        claims, err := auth.GetClaimsFromContext(c)
+        if err != nil </span><span class="cov0" title="0">{
+                JSONError(c, http.StatusUnauthorized, "unauthorized")
+                return
+        }</span>
+
+        <span class="cov3" title="3">var req saveFCMTokenRequest
+        if err := c.ShouldBindJSON(&amp;req); err != nil </span><span class="cov1" title="1">{
+                JSONError(c, http.StatusBadRequest, err.Error())
+                return
+        }</span>
+
+        <span class="cov2" title="2">if err := h.users.SaveFCMToken(c.Request.Context(), claims.UserID, req.FCMToken); err != nil </span><span class="cov1" title="1">{
+                h.logger.Error().Err(err).Uint64("user_id", claims.UserID).Msg("save fcm token failed")
+                JSONError(c, http.StatusInternalServerError, "failed to save fcm token")
+                return
+        }</span>
+
+        <span class="cov1" title="1">h.logger.Info().Uint64("user_id", claims.UserID).Str("fcm_token", req.FCMToken[:20]+"...").Msg("fcm token saved")
+        JSONSuccess(c, http.StatusOK, gin.H{"message": "fcm token saved successfully"})</span>
+}
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package handlers
+
+import (
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+        "github.com/rs/zerolog"
+
+        "github.com/allcallall/backend/internal/config"
+)
+
+// WebRTCHandler exposes runtime WebRTC configuration (ICE/TURN servers) to clients.
+type WebRTCHandler struct {
+        logger zerolog.Logger
+        cfg    config.WebRTCConfig
+}
+
+// NewWebRTCHandler 构造函数
+// NewWebRTCHandler creates a WebRTCHandler instance.
+func NewWebRTCHandler(log zerolog.Logger, cfg config.WebRTCConfig) *WebRTCHandler <span class="cov10" title="2">{
+        return &amp;WebRTCHandler{
+                logger: log.With().Str("component", "webrtc_handler").Logger(),
+                cfg:    cfg,
+        }
+}</span>
+
+// RegisterRoutes 注册路由
+func (h *WebRTCHandler) RegisterRoutes(group *gin.RouterGroup) <span class="cov10" title="2">{
+        group.GET("/webrtc/config", h.GetConfig)
+}</span>
+
+// GetConfig 返回 ICE/TURN 配置
+func (h *WebRTCHandler) GetConfig(c *gin.Context) <span class="cov10" title="2">{
+        ice := h.cfg.ICEServers
+        if ice == nil </span><span class="cov1" title="1">{
+                ice = []config.ICEServer{}
+        }</span>
+        <span class="cov10" title="2">h.logger.Debug().Int("ice_server_count", len(ice)).Msg("serving webrtc config")
+
+        c.JSON(http.StatusOK, gin.H{
+                "ice_servers": ice,
+        })</span>
+}
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package mail
+
+import (
+        "crypto/tls"
+        "fmt"
+
+        "github.com/rs/zerolog"
+        "gopkg.in/mail.v2"
+)
+
+// Config 邮件服务配置
+// Config holds SMTP server settings
+type Config struct {
+        Host             string
+        Port             int
+        Username         string
+        Password         string
+        From             string
+        FromName         string
+        MaxRetries       int
+        RetryDelaySecond int
+}
+
+// Service 邮件发送服务
+// Service handles email operations via SMTP
+type Service struct {
+        config Config
+        logger zerolog.Logger
+}
+
+// NewService 创建邮件服务
+// NewService creates a new mail service instance
+func NewService(cfg Config, logger zerolog.Logger) *Service <span class="cov10" title="4">{
+        return &amp;Service{
+                config: cfg,
+                logger: logger.With().Str("component", "mail_service").Logger(),
+        }
+}</span>
+
+// SendVerificationCode 发送验证码邮件
+// SendVerificationCode sends a verification code email
+func (s *Service) SendVerificationCode(email, code string) error <span class="cov5" title="2">{
+        subject := "AllCallAll 邮箱验证码 / Email Verification Code"
+        body := fmt.Sprintf(`
+                &lt;html&gt;
+                        &lt;body style="font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5;"&gt;
+                                &lt;div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: white; border-radius: 8px;"&gt;
+                                        &lt;h2 style="color: #1f2937; text-align: center;"&gt;邮箱验证 / Email Verification&lt;/h2&gt;
+                                        &lt;p style="color: #6b7280; font-size: 14px;"&gt;您好，&lt;/p&gt;
+                                        &lt;p style="color: #6b7280;"&gt;感谢您注册 AllCallAll。请使用以下验证码完成邮箱验证：&lt;/p&gt;
+                                        
+                                        &lt;div style="background-color: #f0f4f8; padding: 30px; text-align: center; margin: 20px 0; border-radius: 8px;"&gt;
+                                                &lt;h1 style="color: #2563eb; letter-spacing: 10px; margin: 0; font-size: 48px;"&gt;%s&lt;/h1&gt;
+                                                &lt;p style="color: #6b7280; margin-top: 10px; font-size: 12px;"&gt;验证码有效期：10 分钟&lt;/p&gt;
+                                        &lt;/div&gt;
+                                        
+                                        &lt;p style="color: #6b7280; font-size: 14px;"&gt;请注意：&lt;/p&gt;
+                                        &lt;ul style="color: #6b7280; font-size: 14px;"&gt;
+                                                &lt;li&gt;不要与他人分享此验证码&lt;/li&gt;
+                                                &lt;li&gt;AllCallAll 工作人员不会要求您提供验证码&lt;/li&gt;
+                                                &lt;li&gt;如果这不是您的请求，请忽略此邮件&lt;/li&gt;
+                                        &lt;/ul&gt;
+                                        
+                                        &lt;hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;"&gt;
+                                        &lt;p style="color: #9ca3af; font-size: 12px; text-align: center;"&gt;
+                                                © 2024 AllCallAll. 保留所有权利。&lt;br&gt;
+                                                实时音视频通信平台
+                                        &lt;/p&gt;
+                                &lt;/div&gt;
+                        &lt;/body&gt;
+                &lt;/html&gt;
+        `, code)
+
+        return s.send(email, subject, body)
+}</span>
+
+// send 发送邮件（内部方法）
+// send is an internal method to send emails via SMTP
+func (s *Service) send(to, subject, body string) error <span class="cov8" title="3">{
+        m := mail.NewMessage()
+        m.SetHeader("From", fmt.Sprintf("%s &lt;%s&gt;", s.config.FromName, s.config.From))
+        m.SetHeader("To", to)
+        m.SetHeader("Subject", subject)
+        m.SetBody("text/html", body)
+
+        // 创建 SMTP 拨号器
+        d := mail.NewDialer(s.config.Host, s.config.Port, s.config.Username, s.config.Password)
+
+        // 配置 TLS（Gmail 需要 TLS）
+        d.TLSConfig = &amp;tls.Config{
+                InsecureSkipVerify: false,
+                ServerName:         s.config.Host,
+        }
+
+        // 发送邮件
+        if err := d.DialAndSend(m); err != nil </span><span class="cov8" title="3">{
+                s.logger.Error().
+                        Err(err).
+                        Str("to", to).
+                        Str("subject", subject).
+                        Msg("failed to send email")
+                return fmt.Errorf("send email: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">s.logger.Info().
+                Str("to", to).
+                Str("subject", subject).
+                Msg("email sent successfully")
+
+        return nil</span>
+}
+
+// HealthCheck 检查 SMTP 连接
+// HealthCheck verifies SMTP server connectivity
+func (s *Service) HealthCheck() error <span class="cov1" title="1">{
+        d := mail.NewDialer(s.config.Host, s.config.Port, s.config.Username, s.config.Password)
+        d.TLSConfig = &amp;tls.Config{
+                InsecureSkipVerify: false,
+                ServerName:         s.config.Host,
+        }
+
+        conn, err := d.Dial()
+        if err != nil </span><span class="cov1" title="1">{
+                s.logger.Error().Err(err).Msg("SMTP health check failed")
+                return fmt.Errorf("smtp health check: %w", err)
+        }</span>
+        <span class="cov0" title="0">defer conn.Close()
+
+        s.logger.Info().Msg("SMTP health check passed")
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">package mail
+
+import (
+        "crypto/rand"
+        "errors"
+        "fmt"
+        "time"
+
+        "gorm.io/gorm"
+
+        "github.com/allcallall/backend/internal/models"
+)
+
+// VerificationCodeService 验证码业务逻辑
+// VerificationCodeService handles email verification code operations
+type VerificationCodeService struct {
+        db            *gorm.DB
+        mailService   *Service
+        codeLength    int
+        validityTime  time.Duration
+        maxRetries    int
+        blockDuration time.Duration
+}
+
+// NewVerificationCodeService 创建验证码服务
+// NewVerificationCodeService creates a new verification code service
+func NewVerificationCodeService(
+        db *gorm.DB,
+        mailService *Service,
+) *VerificationCodeService <span class="cov1" title="1">{
+        return &amp;VerificationCodeService{
+                db:            db,
+                mailService:   mailService,
+                codeLength:    6,
+                validityTime:  10 * time.Minute,
+                maxRetries:    3,
+                blockDuration: 30 * time.Minute,
+        }
+}</span>
+
+// GenerateAndSend 生成并发送验证码
+// GenerateAndSend creates a verification code and sends it via email
+func (s *VerificationCodeService) GenerateAndSend(email string) error <span class="cov1" title="1">{
+        // 1. 检查防刷限制
+        blocked, err := s.isEmailBlocked(email)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov1" title="1">if blocked </span><span class="cov0" title="0">{
+                return errors.New("email is temporarily blocked, please try again later")
+        }</span>
+
+        // 2. 生成验证码
+        <span class="cov1" title="1">code, err := s.generateRandomCode(s.codeLength)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // 3. 删除旧验证码
+        <span class="cov1" title="1">if err := s.db.
+                Where("email = ? AND is_verified = ?", email, false).
+                Delete(&amp;models.EmailVerificationCode{}).Error; err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("delete old codes: %w", err)
+        }</span>
+
+        // 4. 创建新验证码记录
+        <span class="cov1" title="1">now := time.Now()
+        verification := &amp;models.EmailVerificationCode{
+                Email:        email,
+                Code:         code,
+                ExpiresAt:    now.Add(s.validityTime),
+                MaxAttempts:  s.maxRetries,
+                AttemptCount: 0,
+        }
+
+        if err := s.db.Create(verification).Error; err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("create verification code: %w", err)
+        }</span>
+
+        // 5. 发送邮件
+        <span class="cov1" title="1">if err := s.mailService.SendVerificationCode(email, code); err != nil </span><span class="cov1" title="1">{
+                // 发送失败时删除验证码记录
+                s.db.Delete(verification)
+                return fmt.Errorf("send verification email: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+// Verify 验证码校验
+// Verify checks if the provided code matches the stored code for the email
+func (s *VerificationCodeService) Verify(email, inputCode string) error <span class="cov6" title="4">{
+        var verification models.EmailVerificationCode
+
+        // 查询验证码记录
+        if err := s.db.
+                Where("email = ? AND is_verified = ?", email, false).
+                First(&amp;verification).Error; err != nil </span><span class="cov1" title="1">{
+                if errors.Is(err, gorm.ErrRecordNotFound) </span><span class="cov1" title="1">{
+                        return errors.New("verification code not found or already used")
+                }</span>
+                <span class="cov0" title="0">return err</span>
+        }
+
+        // 检查过期
+        <span class="cov4" title="3">if time.Now().After(verification.ExpiresAt) </span><span class="cov1" title="1">{
+                return errors.New("verification code has expired")
+        }</span>
+
+        // 检查尝试次数和封禁状态
+        <span class="cov3" title="2">if verification.AttemptCount &gt;= verification.MaxAttempts </span><span class="cov1" title="1">{
+                if verification.BlockedUntil != nil &amp;&amp; time.Now().Before(*verification.BlockedUntil) </span><span class="cov1" title="1">{
+                        return errors.New("too many attempts, please try again later")
+                }</span>
+        }
+
+        // 验证码匹配
+        <span class="cov1" title="1">if verification.Code != inputCode </span><span class="cov1" title="1">{
+                verification.AttemptCount++
+                now := time.Now()
+                verification.LastAttemptAt = &amp;now
+
+                // 超过最大尝试次数时触发封禁
+                if verification.AttemptCount &gt;= verification.MaxAttempts </span><span class="cov0" title="0">{
+                        blockedUntil := time.Now().Add(s.blockDuration)
+                        verification.BlockedUntil = &amp;blockedUntil
+                }</span>
+
+                <span class="cov1" title="1">s.db.Save(&amp;verification)
+                return errors.New("verification code is incorrect")</span>
+        }
+
+        // 标记为已验证
+        <span class="cov0" title="0">now := time.Now()
+        verification.IsVerified = true
+        verification.VerifiedAt = &amp;now
+
+        if err := s.db.Save(&amp;verification).Error; err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("mark verification as verified: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+// 生成随机验证码
+func (s *VerificationCodeService) generateRandomCode(length int) (string, error) <span class="cov3" title="2">{
+        const digits = "0123456789"
+        b := make([]byte, length)
+        if _, err := rand.Read(b); err != nil </span><span class="cov0" title="0">{
+                return "", err
+        }</span>
+        <span class="cov3" title="2">for i := 0; i &lt; length; i++ </span><span class="cov10" title="12">{
+                b[i] = digits[int(b[i])%len(digits)]
+        }</span>
+        <span class="cov3" title="2">return string(b), nil</span>
+}
+
+// 检查邮箱是否被封禁
+func (s *VerificationCodeService) isEmailBlocked(email string) (bool, error) <span class="cov3" title="2">{
+        var count int64
+        result := s.db.
+                Model(&amp;models.EmailVerificationCode{}).
+                Where("email = ? AND blocked_until &gt; ?", email, time.Now()).
+                Count(&amp;count)
+
+        return count &gt; 0, result.Error
+}</span>
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">package media
+
+import (
+        "context"
+        "fmt"
+        "sync"
+
+        "github.com/pion/webrtc/v4"
+        "github.com/rs/zerolog"
+)
+
+// Engine 是 Pion WebRTC 媒体引擎
+// Engine is the Pion WebRTC media engine that manages peer connections
+type Engine struct {
+        mu              sync.RWMutex
+        logger          zerolog.Logger
+        peerConnections map[string]*PeerConnection
+        defaultConfig   webrtc.Configuration
+}
+
+// Config 包含 Pion 媒体引擎的配置
+// Config contains configuration for Pion media engine
+type Config struct {
+        // WebRTC 配置
+        // WebRTC configuration
+        WebRTCConfig webrtc.Configuration
+}
+
+// NewEngine 创建新的媒体引擎
+// NewEngine creates a new Pion media engine
+func NewEngine(logger zerolog.Logger, cfg *Config) (*Engine, error) <span class="cov5" title="2">{
+        return &amp;Engine{
+                logger:          logger.With().Str("component", "media_engine").Logger(),
+                peerConnections: make(map[string]*PeerConnection),
+                defaultConfig:   cfg.WebRTCConfig,
+        }, nil
+}</span>
+
+// CreatePeerConnection 创建新的对等连接
+// CreatePeerConnection creates a new peer connection
+func (e *Engine) CreatePeerConnection(ctx context.Context, callID, localEmail, remoteEmail string, cfg *webrtc.Configuration) (*PeerConnection, error) <span class="cov8" title="3">{
+        e.mu.Lock()
+        defer e.mu.Unlock()
+
+        pcCfg := e.defaultConfig
+        if cfg != nil </span><span class="cov0" title="0">{
+                pcCfg = *cfg
+        }</span>
+
+        // 创建 PeerConnection
+        // Create peer connection
+        <span class="cov8" title="3">pc, err := webrtc.NewPeerConnection(pcCfg)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("create peer connection: %w", err)
+        }</span>
+
+        <span class="cov8" title="3">peerConn := &amp;PeerConnection{
+                PC:          pc,
+                CallID:      callID,
+                LocalEmail:  localEmail,
+                RemoteEmail: remoteEmail,
+                State:       CallStateOffering,
+                Handlers:    &amp;MediaHandlers{},
+        }
+
+        // 设置事件处理器
+        // Setup event handlers
+        e.setupPeerConnectionHandlers(pc, peerConn)
+
+        connectionID := fmt.Sprintf("%s-%s-%s", callID, localEmail, remoteEmail)
+        e.peerConnections[connectionID] = peerConn
+
+        e.logger.Info().
+                Str("call_id", callID).
+                Str("local", localEmail).
+                Str("remote", remoteEmail).
+                Msg("peer connection created")
+
+        return peerConn, nil</span>
+}
+
+// setupPeerConnectionHandlers 设置 PeerConnection 的事件处理器
+// setupPeerConnectionHandlers configures event handlers for a peer connection
+func (e *Engine) setupPeerConnectionHandlers(pc *webrtc.PeerConnection, peerConn *PeerConnection) <span class="cov8" title="3">{
+        // ICE candidate 处理
+        // Handle ICE candidates
+        pc.OnICECandidate(func(candidate *webrtc.ICECandidate) </span><span class="cov0" title="0">{
+                if candidate != nil &amp;&amp; peerConn.Handlers.OnICECandidate != nil </span><span class="cov0" title="0">{
+                        peerConn.Handlers.OnICECandidate(candidate)
+                }</span>
+        })
+
+        // ICE 连接状态改变
+        // Handle ICE connection state changes
+        <span class="cov8" title="3">pc.OnICEConnectionStateChange(func(connectionState webrtc.ICEConnectionState) </span><span class="cov0" title="0">{
+                e.logger.Debug().
+                        Str("call_id", peerConn.CallID).
+                        Str("state", connectionState.String()).
+                        Msg("ice connection state changed")
+
+                if peerConn.Handlers.OnICEConnectionStateChange != nil </span><span class="cov0" title="0">{
+                        peerConn.Handlers.OnICEConnectionStateChange(connectionState)
+                }</span>
+        })
+
+        // 信令状态改变
+        // Handle signaling state changes
+        <span class="cov8" title="3">pc.OnSignalingStateChange(func(signalingState webrtc.SignalingState) </span><span class="cov0" title="0">{
+                e.logger.Debug().
+                        Str("call_id", peerConn.CallID).
+                        Str("state", signalingState.String()).
+                        Msg("signaling state changed")
+
+                if peerConn.Handlers.OnSignalingStateChange != nil </span><span class="cov0" title="0">{
+                        peerConn.Handlers.OnSignalingStateChange(signalingState)
+                }</span>
+        })
+
+        // 连接状态改变
+        // Handle connection state changes
+        <span class="cov8" title="3">pc.OnConnectionStateChange(func(connectionState webrtc.PeerConnectionState) </span><span class="cov8" title="3">{
+                e.logger.Info().
+                        Str("call_id", peerConn.CallID).
+                        Str("state", connectionState.String()).
+                        Msg("connection state changed")
+
+                if peerConn.Handlers.OnConnectionStateChange != nil </span><span class="cov0" title="0">{
+                        peerConn.Handlers.OnConnectionStateChange(connectionState)
+                }</span>
+
+                // 自动清理已关闭的连接
+                // Auto cleanup closed connections
+                <span class="cov8" title="3">if connectionState == webrtc.PeerConnectionStateClosed ||
+                        connectionState == webrtc.PeerConnectionStateFailed </span><span class="cov8" title="3">{
+                        _ = e.ClosePeerConnection(peerConn.CallID, peerConn.LocalEmail, peerConn.RemoteEmail)
+                }</span>
+        })
+
+        // 媒体轨道处理
+        // Handle media tracks
+        <span class="cov8" title="3">pc.OnTrack(func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) </span><span class="cov0" title="0">{
+                switch track.Kind() </span>{
+                case webrtc.RTPCodecTypeAudio:<span class="cov0" title="0">
+                        e.logger.Debug().
+                                Str("call_id", peerConn.CallID).
+                                Msg("audio track received")
+                        if peerConn.Handlers.OnAudioTrack != nil </span><span class="cov0" title="0">{
+                                peerConn.Handlers.OnAudioTrack(track, receiver)
+                        }</span>
+
+                case webrtc.RTPCodecTypeVideo:<span class="cov0" title="0">
+                        e.logger.Debug().
+                                Str("call_id", peerConn.CallID).
+                                Msg("video track received")
+                        if peerConn.Handlers.OnVideoTrack != nil </span><span class="cov0" title="0">{
+                                peerConn.Handlers.OnVideoTrack(track, receiver)
+                        }</span>
+                }
+        })
+}
+
+// ClosePeerConnection 关闭对等连接
+// ClosePeerConnection closes and removes a peer connection
+func (e *Engine) ClosePeerConnection(callID, localEmail, remoteEmail string) error <span class="cov10" title="4">{
+        e.mu.Lock()
+        defer e.mu.Unlock()
+
+        connectionID := fmt.Sprintf("%s-%s-%s", callID, localEmail, remoteEmail)
+        peerConn, exists := e.peerConnections[connectionID]
+        if !exists </span><span class="cov8" title="3">{
+                return fmt.Errorf("peer connection not found: %s", connectionID)
+        }</span>
+
+        <span class="cov1" title="1">peerConn.State = CallStateEnded
+
+        if err := peerConn.PC.Close(); err != nil </span><span class="cov0" title="0">{
+                e.logger.Warn().Err(err).Str("call_id", callID).Msg("error closing peer connection")
+        }</span>
+
+        <span class="cov1" title="1">delete(e.peerConnections, connectionID)
+
+        e.logger.Info().
+                Str("call_id", callID).
+                Str("local", localEmail).
+                Str("remote", remoteEmail).
+                Msg("peer connection closed")
+
+        return nil</span>
+}
+
+// CloseUserSessions 关闭与特定用户相关的所有对等连接
+// CloseUserSessions closes all peer connections associated with a specific user email
+func (e *Engine) CloseUserSessions(email string) <span class="cov1" title="1">{
+        e.mu.Lock()
+        defer e.mu.Unlock()
+
+        for id, peerConn := range e.peerConnections </span><span class="cov5" title="2">{
+                if peerConn.LocalEmail == email || peerConn.RemoteEmail == email </span><span class="cov5" title="2">{
+                        peerConn.State = CallStateEnded
+                        if err := peerConn.PC.Close(); err != nil </span><span class="cov0" title="0">{
+                                e.logger.Warn().Err(err).Str("email", email).Str("connection_id", id).Msg("error closing peer connection for disconnected user")
+                        }</span>
+                        <span class="cov5" title="2">delete(e.peerConnections, id)
+                        e.logger.Info().Str("email", email).Str("connection_id", id).Msg("closed session for disconnected user")</span>
+                }
+        }
+}
+
+// GetPeerConnection 获取对等连接
+// GetPeerConnection retrieves a peer connection by ID
+func (e *Engine) GetPeerConnection(callID, localEmail, remoteEmail string) (*PeerConnection, error) <span class="cov5" title="2">{
+        e.mu.RLock()
+        defer e.mu.RUnlock()
+
+        connectionID := fmt.Sprintf("%s-%s-%s", callID, localEmail, remoteEmail)
+        peerConn, exists := e.peerConnections[connectionID]
+        if !exists </span><span class="cov1" title="1">{
+                return nil, fmt.Errorf("peer connection not found: %s", connectionID)
+        }</span>
+
+        <span class="cov1" title="1">return peerConn, nil</span>
+}
+
+// Shutdown 关闭媒体引擎并清理所有连接
+// Shutdown closes the media engine and all peer connections
+func (e *Engine) Shutdown(ctx context.Context) error <span class="cov1" title="1">{
+        e.mu.Lock()
+        defer e.mu.Unlock()
+
+        var lastErr error
+        for id, peerConn := range e.peerConnections </span><span class="cov0" title="0">{
+                peerConn.State = CallStateEnded
+                if err := peerConn.PC.Close(); err != nil </span><span class="cov0" title="0">{
+                        e.logger.Warn().Err(err).Str("connection_id", id).Msg("error closing peer connection")
+                        lastErr = err
+                }</span>
+        }
+
+        <span class="cov1" title="1">e.peerConnections = make(map[string]*PeerConnection)
+
+        if lastErr != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("shutdown with errors: %w", lastErr)
+        }</span>
+
+        <span class="cov1" title="1">e.logger.Info().Msg("media engine shutdown complete")
+        return nil</span>
+}
+
+// ListPeerConnections 列出所有活跃的对等连接
+// ListPeerConnections returns all active peer connections (for monitoring/debugging)
+func (e *Engine) ListPeerConnections() []*PeerConnection <span class="cov5" title="2">{
+        e.mu.RLock()
+        defer e.mu.RUnlock()
+
+        result := make([]*PeerConnection, 0, len(e.peerConnections))
+        for _, pc := range e.peerConnections </span><span class="cov1" title="1">{
+                result = append(result, pc)
+        }</span>
+        <span class="cov5" title="2">return result</span>
+}
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">package presence
+
+import (
+        "context"
+        "encoding/json"
+        "time"
+
+        "github.com/redis/go-redis/v9"
+        "github.com/rs/zerolog"
+
+        "github.com/allcallall/backend/internal/user"
+)
+
+const (
+        presenceKeyPrefix = "presence:user:"
+        defaultTTL        = 24 * time.Hour
+)
+
+// Status 表示用户在线状态
+// Status represents a user's presence information.
+type Status struct {
+        Email    string    `json:"email"`
+        Online   bool      `json:"online"`
+        LastSeen time.Time `json:"last_seen"`
+}
+
+// Manager 管理用户在线状态
+// Manager handles presence updates backed by Redis.
+type Manager struct {
+        redis     *redis.Client
+        logger    zerolog.Logger
+        userSvc   *user.Service
+        statusTTL time.Duration
+}
+
+// NewManager 创建 presence 管理器
+// NewManager returns a presence manager.
+func NewManager(rdb *redis.Client, log zerolog.Logger, userSvc *user.Service) *Manager <span class="cov1" title="1">{
+        return &amp;Manager{
+                redis:     rdb,
+                logger:    log.With().Str("component", "presence_manager").Logger(),
+                userSvc:   userSvc,
+                statusTTL: defaultTTL,
+        }
+}</span>
+
+// SetOnline 标记用户在线
+// SetOnline updates Redis presence entry to online.
+func (m *Manager) SetOnline(ctx context.Context, email string) error <span class="cov1" title="1">{
+        status := Status{
+                Email:    email,
+                Online:   true,
+                LastSeen: time.Now(),
+        }
+        return m.saveStatus(ctx, status)
+}</span>
+
+// SetOffline 标记用户离线，并同步 last_seen
+// SetOffline marks the user as offline and updates DB last seen timestamp.
+func (m *Manager) SetOffline(ctx context.Context, email string) error <span class="cov1" title="1">{
+        now := time.Now()
+        status := Status{
+                Email:    email,
+                Online:   false,
+                LastSeen: now,
+        }
+
+        if err := m.saveStatus(ctx, status); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov1" title="1">userModel, err := m.userSvc.GetByEmail(ctx, email)
+        if err != nil </span><span class="cov0" title="0">{
+                m.logger.Warn().Err(err).Str("email", email).Msg("failed to fetch user for last seen")
+                return nil
+        }</span>
+
+        <span class="cov1" title="1">if err := m.userSvc.UpdateLastSeen(ctx, userModel.ID, &amp;now); err != nil </span><span class="cov0" title="0">{
+                m.logger.Warn().Err(err).Uint64("user_id", userModel.ID).Msg("failed to update last seen in DB")
+        }</span>
+        <span class="cov1" title="1">return nil</span>
+}
+
+// UpdateLastSeen 仅更新 last_seen，不改变在线状态
+// UpdateLastSeen refreshes the timestamp while keeping status.
+func (m *Manager) UpdateLastSeen(ctx context.Context, email string) error <span class="cov1" title="1">{
+        status, err := m.GetStatus(ctx, email)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov1" title="1">if status.Email == "" </span><span class="cov0" title="0">{
+                status.Email = email
+        }</span>
+        <span class="cov1" title="1">status.LastSeen = time.Now()
+        return m.saveStatus(ctx, status)</span>
+}
+
+// GetStatus 获取单个用户状态
+// GetStatus fetches presence for a single email.
+func (m *Manager) GetStatus(ctx context.Context, email string) (Status, error) <span class="cov4" title="2">{
+        val, err := m.redis.Get(ctx, m.key(email)).Result()
+        if err != nil </span><span class="cov0" title="0">{
+                if err == redis.Nil </span><span class="cov0" title="0">{
+                        return Status{
+                                Email:    email,
+                                Online:   false,
+                                LastSeen: time.Time{},
+                        }, nil
+                }</span>
+                <span class="cov0" title="0">return Status{}, err</span>
+        }
+        <span class="cov4" title="2">var status Status
+        if err := json.Unmarshal([]byte(val), &amp;status); err != nil </span><span class="cov0" title="0">{
+                return Status{}, err
+        }</span>
+        <span class="cov4" title="2">return status, nil</span>
+}
+
+// GetStatuses 批量获取用户状态
+// GetStatuses fetches presence for multiple emails.
+func (m *Manager) GetStatuses(ctx context.Context, emails []string) (map[string]Status, error) <span class="cov1" title="1">{
+        result := make(map[string]Status, len(emails))
+        if len(emails) == 0 </span><span class="cov0" title="0">{
+                return result, nil
+        }</span>
+
+        <span class="cov1" title="1">keys := make([]string, 0, len(emails))
+        for _, email := range emails </span><span class="cov4" title="2">{
+                keys = append(keys, m.key(email))
+        }</span>
+
+        <span class="cov1" title="1">values, err := m.redis.MGet(ctx, keys...).Result()
+        if err != nil &amp;&amp; err != redis.Nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov1" title="1">for i, raw := range values </span><span class="cov4" title="2">{
+                email := emails[i]
+                if raw == nil </span><span class="cov0" title="0">{
+                        result[email] = Status{
+                                Email:    email,
+                                Online:   false,
+                                LastSeen: time.Time{},
+                        }
+                        continue</span>
+                }
+                <span class="cov4" title="2">var status Status
+                if err := json.Unmarshal([]byte(raw.(string)), &amp;status); err != nil </span><span class="cov0" title="0">{
+                        result[email] = Status{
+                                Email:    email,
+                                Online:   false,
+                                LastSeen: time.Time{},
+                        }
+                        continue</span>
+                }
+                <span class="cov4" title="2">result[email] = status</span>
+        }
+        <span class="cov1" title="1">return result, nil</span>
+}
+
+func (m *Manager) saveStatus(ctx context.Context, status Status) error <span class="cov6" title="3">{
+        data, err := json.Marshal(status)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov6" title="3">return m.redis.Set(ctx, m.key(status.Email), data, m.statusTTL).Err()</span>
+}
+
+func (m *Manager) key(email string) string <span class="cov10" title="7">{
+        return presenceKeyPrefix + email
+}</span>
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">package user
+
+import (
+        "errors"
+        "unicode"
+)
+
+// PasswordError 密码相关错误
+var (
+        ErrPasswordTooShort  = errors.New("password must be at least 8 characters")
+        ErrPasswordTooLong   = errors.New("password must be at most 128 characters")
+        ErrPasswordWeak      = errors.New("password must contain both letters and numbers")
+        ErrPasswordMismatch  = errors.New("new password and confirm password do not match")
+        ErrPasswordUnchanged = errors.New("new password must be different from old password")
+        ErrSpecialCharacters = errors.New("password cannot contain special characters")
+)
+
+// ValidatePasswordStrength 验证密码强度
+// 要求: 长度 8-128, 包含字母和数字, 不能包含特殊字符
+func ValidatePasswordStrength(password string) error <span class="cov6" title="12">{
+        if len(password) &lt; 8 </span><span class="cov1" title="1">{
+                return ErrPasswordTooShort
+        }</span>
+        <span class="cov5" title="11">if len(password) &gt; 128 </span><span class="cov1" title="1">{
+                return ErrPasswordTooLong
+        }</span>
+
+        <span class="cov5" title="10">hasLetter := false
+        hasDigit := false
+
+        for _, r := range password </span><span class="cov10" title="82">{
+                if unicode.IsLetter(r) </span><span class="cov9" title="55">{
+                        hasLetter = true
+                }</span> else<span class="cov7" title="27"> if unicode.IsDigit(r) </span><span class="cov7" title="25">{
+                        hasDigit = true
+                }</span> else<span class="cov2" title="2"> {
+                        // 不允许任何其他字符（包括空格、特殊字符）
+                        return ErrSpecialCharacters
+                }</span>
+        }
+
+        <span class="cov5" title="8">if !hasLetter || !hasDigit </span><span class="cov2" title="2">{
+                return ErrPasswordWeak
+        }</span>
+
+        <span class="cov4" title="6">return nil</span>
+}
+
+// ValidatePasswordsMatch 验证两个密码是否匹配
+func ValidatePasswordsMatch(new, confirm string) error <span class="cov4" title="7">{
+        if new != confirm </span><span class="cov2" title="2">{
+                return ErrPasswordMismatch
+        }</span>
+        <span class="cov4" title="5">return nil</span>
+}
+
+// ValidatePasswordChange 验证密码修改的有效性
+func ValidatePasswordChange(oldPassword, newPassword, confirmPassword string) error <span class="cov4" title="6">{
+        // 验证新密码强度
+        if err := ValidatePasswordStrength(newPassword); err != nil </span><span class="cov1" title="1">{
+                return err
+        }</span>
+
+        // 验证两次新密码是否匹配
+        <span class="cov4" title="5">if err := ValidatePasswordsMatch(newPassword, confirmPassword); err != nil </span><span class="cov1" title="1">{
+                return err
+        }</span>
+
+        // 验证新密码与旧密码不同
+        <span class="cov3" title="4">if oldPassword == newPassword </span><span class="cov1" title="1">{
+                return ErrPasswordUnchanged
+        }</span>
+
+        <span class="cov3" title="3">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">package user
+
+import (
+        "context"
+        "strings"
+        "time"
+
+        "gorm.io/gorm"
+
+        "github.com/allcallall/backend/internal/models"
+)
+
+// Repository 用户数据访问层
+// Repository encapsulates database operations for users.
+type Repository struct {
+        db *gorm.DB
+}
+
+// NewRepository 构造函数
+// NewRepository creates a new user repository.
+func NewRepository(db *gorm.DB) *Repository <span class="cov5" title="3">{
+        return &amp;Repository{db: db}
+}</span>
+
+// ErrNotFound 用户不存在错误
+// ErrNotFound signals that the user record was not located.
+var ErrNotFound = gorm.ErrRecordNotFound
+
+// Create 保存用户
+// Create persists a new user record.
+func (r *Repository) Create(ctx context.Context, user *models.User) error <span class="cov1" title="1">{
+        return r.db.WithContext(ctx).Create(user).Error
+}</span>
+
+// FindByEmail 根据邮箱查找用户
+// FindByEmail fetches a user by email address.
+func (r *Repository) FindByEmail(ctx context.Context, email string) (*models.User, error) <span class="cov9" title="7">{
+        var user models.User
+        err := r.db.WithContext(ctx).Where("LOWER(email) = ?", strings.ToLower(email)).Take(&amp;user).Error
+        if err != nil </span><span class="cov7" title="4">{
+                return nil, err
+        }</span>
+        <span class="cov5" title="3">return &amp;user, nil</span>
+}
+
+// FindByID 根据 ID 查找用户
+// FindByID returns user by primary key.
+func (r *Repository) FindByID(ctx context.Context, id uint64) (*models.User, error) <span class="cov10" title="8">{
+        var user models.User
+        err := r.db.WithContext(ctx).Where("id = ?", id).Take(&amp;user).Error
+        if err != nil </span><span class="cov5" title="3">{
+                return nil, err
+        }</span>
+        <span class="cov7" title="5">return &amp;user, nil</span>
+}
+
+// SearchByEmail 查询匹配邮箱的用户（模糊搜索）
+// SearchByEmail performs case-insensitive search by email substring.
+func (r *Repository) SearchByEmail(ctx context.Context, query string, limit int) ([]models.User, error) <span class="cov4" title="2">{
+        if limit &lt;= 0 </span><span class="cov1" title="1">{
+                limit = 10
+        }</span>
+
+        <span class="cov4" title="2">q := strings.ToLower(query)
+        var users []models.User
+        err := r.db.WithContext(ctx).
+                Where("LOWER(email) LIKE ?", "%"+q+"%").
+                Order("created_at DESC").
+                Limit(limit).
+                Find(&amp;users).Error
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov4" title="2">return users, nil</span>
+}
+
+// UpdateLastSeen 更新用户最后在线时间
+// UpdateLastSeen updates the last_seen timestamp.
+func (r *Repository) UpdateLastSeen(ctx context.Context, userID uint64, t *time.Time) error <span class="cov1" title="1">{
+        return r.db.WithContext(ctx).Model(&amp;models.User{}).
+                Where("id = ?", userID).
+                Update("last_seen", t).Error
+}</span>
+
+// UpdatePassword 更新用户密码
+// UpdatePassword updates user password hash.
+func (r *Repository) UpdatePassword(ctx context.Context, userID uint64, passwordHash string) error <span class="cov4" title="2">{
+        return r.db.WithContext(ctx).Model(&amp;models.User{}).
+                Where("id = ?", userID).
+                Update("password_hash", passwordHash).Error
+}</span>
+
+// UpdateFCMToken 更新用户的 FCM Token
+// UpdateFCMToken updates user FCM token for push notifications.
+func (r *Repository) UpdateFCMToken(ctx context.Context, userID uint64, fcmToken string) error <span class="cov1" title="1">{
+        return r.db.WithContext(ctx).Model(&amp;models.User{}).
+                Where("id = ?", userID).
+                Update("fcm_token", fcmToken).Error
+}</span>
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">package user
+
+import (
+        "context"
+        "errors"
+        "strings"
+        "time"
+
+        "golang.org/x/crypto/bcrypt"
+
+        "github.com/allcallall/backend/internal/models"
+)
+
+// Service 用户业务逻辑
+// Service handles high-level user operations.
+type Service struct {
+        repo *Repository
+}
+
+// NewService 构造函数
+// NewService constructs a Service.
+func NewService(repo *Repository) *Service <span class="cov7" title="3">{
+        return &amp;Service{repo: repo}
+}</span>
+
+// RegisterInput 注册输入
+// RegisterInput captures registration parameters.
+type RegisterInput struct {
+        Email       string
+        Password    string
+        DisplayName string
+}
+
+// LoginInput 登录输入
+// LoginInput represents login credentials.
+type LoginInput struct {
+        Email    string
+        Password string
+}
+
+// ErrEmailAlreadyUsed 邮箱已存在
+// ErrEmailAlreadyUsed indicates the email is taken.
+var ErrEmailAlreadyUsed = errors.New("email already registered")
+
+// ErrInvalidCredentials 凭证无效
+// ErrInvalidCredentials indicates wrong password or email.
+var ErrInvalidCredentials = errors.New("invalid credentials")
+
+// Register 注册用户
+// Register creates a new user with hashed password.
+func (s *Service) Register(ctx context.Context, in RegisterInput) (*models.User, error) <span class="cov7" title="3">{
+        in.Email = strings.TrimSpace(strings.ToLower(in.Email))
+        in.DisplayName = strings.TrimSpace(in.DisplayName)
+
+        if _, err := s.repo.FindByEmail(ctx, in.Email); err == nil </span><span class="cov1" title="1">{
+                return nil, ErrEmailAlreadyUsed
+        }</span> else<span class="cov4" title="2"> if err != nil &amp;&amp; !errors.Is(err, ErrNotFound) </span><span class="cov1" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov1" title="1">hash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov1" title="1">user := &amp;models.User{
+                Email:        in.Email,
+                PasswordHash: string(hash),
+                DisplayName:  in.DisplayName,
+        }
+
+        if err := s.repo.Create(ctx, user); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov1" title="1">return user, nil</span>
+}
+
+// Authenticate 验证用户
+// Authenticate verifies email/password and returns user.
+func (s *Service) Authenticate(ctx context.Context, in LoginInput) (*models.User, error) <span class="cov7" title="3">{
+        user, err := s.repo.FindByEmail(ctx, strings.TrimSpace(strings.ToLower(in.Email)))
+        if err != nil </span><span class="cov1" title="1">{
+                if errors.Is(err, ErrNotFound) </span><span class="cov1" title="1">{
+                        return nil, ErrInvalidCredentials
+                }</span>
+                <span class="cov0" title="0">return nil, err</span>
+        }
+
+        <span class="cov4" title="2">if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(in.Password)); err != nil </span><span class="cov1" title="1">{
+                return nil, ErrInvalidCredentials
+        }</span>
+
+        <span class="cov1" title="1">return user, nil</span>
+}
+
+// SearchByEmail 搜索用户
+// SearchByEmail searches users by email substring.
+func (s *Service) SearchByEmail(ctx context.Context, query string, limit int) ([]models.User, error) <span class="cov4" title="2">{
+        return s.repo.SearchByEmail(ctx, query, limit)
+}</span>
+
+// GetByID 根据 ID 获取用户
+// GetByID fetches user by ID.
+func (s *Service) GetByID(ctx context.Context, id uint64) (*models.User, error) <span class="cov1" title="1">{
+        return s.repo.FindByID(ctx, id)
+}</span>
+
+// GetByEmail 根据邮箱获取用户
+// GetByEmail fetches user by email.
+func (s *Service) GetByEmail(ctx context.Context, email string) (*models.User, error) <span class="cov1" title="1">{
+        return s.repo.FindByEmail(ctx, strings.TrimSpace(strings.ToLower(email)))
+}</span>
+
+// UpdateLastSeen 更新最后在线时间
+// UpdateLastSeen updates last seen timestamp.
+func (s *Service) UpdateLastSeen(ctx context.Context, userID uint64, t *time.Time) error <span class="cov1" title="1">{
+        return s.repo.UpdateLastSeen(ctx, userID, t)
+}</span>
+
+// ChangePasswordInput 密码修改输入
+// ChangePasswordInput represents password change parameters.
+type ChangePasswordInput struct {
+        OldPassword     string
+        NewPassword     string
+        ConfirmPassword string
+}
+
+// ChangePassword 修改用户密码
+// ChangePassword updates user password after verifying old password.
+func (s *Service) ChangePassword(ctx context.Context, userID uint64, in ChangePasswordInput) error <span class="cov10" title="5">{
+        // 获取用户信息
+        user, err := s.repo.FindByID(ctx, userID)
+        if err != nil </span><span class="cov1" title="1">{
+                if errors.Is(err, ErrNotFound) </span><span class="cov1" title="1">{
+                        return ErrNotFound
+                }</span>
+                <span class="cov0" title="0">return err</span>
+        }
+
+        // 验证旧密码
+        <span class="cov8" title="4">if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(in.OldPassword)); err != nil </span><span class="cov1" title="1">{
+                return ErrInvalidCredentials
+        }</span>
+
+        // 验证新密码的完整性（包括与旧密码的比较）
+        <span class="cov7" title="3">if err := ValidatePasswordChange(in.OldPassword, in.NewPassword, in.ConfirmPassword); err != nil </span><span class="cov1" title="1">{
+                return err
+        }</span>
+
+        // 生成新的密码哈希
+        <span class="cov4" title="2">newHash, err := bcrypt.GenerateFromPassword([]byte(in.NewPassword), bcrypt.DefaultCost)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // 更新数据库
+        <span class="cov4" title="2">return s.repo.UpdatePassword(ctx, userID, string(newHash))</span>
+}
+
+// SaveFCMToken 保存或更新用户的 FCM Token
+// SaveFCMToken saves or updates user FCM token for push notifications.
+func (s *Service) SaveFCMToken(ctx context.Context, userID uint64, fcmToken string) error <span class="cov4" title="2">{
+        if strings.TrimSpace(fcmToken) == "" </span><span class="cov1" title="1">{
+                return errors.New("fcm token cannot be empty")
+        }</span>
+        <span class="cov1" title="1">return s.repo.UpdateFCMToken(ctx, userID, strings.TrimSpace(fcmToken))</span>
+}
+
+// GetFCMToken 获取用户的 FCM Token
+// GetFCMToken retrieves user FCM token.
+func (s *Service) GetFCMToken(ctx context.Context, userID uint64) (string, error) <span class="cov4" title="2">{
+        user, err := s.repo.FindByID(ctx, userID)
+        if err != nil </span><span class="cov1" title="1">{
+                return "", err
+        }</span>
+        <span class="cov1" title="1">return user.FCMToken, nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

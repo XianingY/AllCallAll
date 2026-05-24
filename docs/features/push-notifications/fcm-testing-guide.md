@@ -40,8 +40,8 @@ npm start
   ```
 - 移动端日志显示：
   ```
-  [AuthContext] Sending FCM token to backend...
-  [AuthContext] FCM token sent successfully
+  [AuthContext] Failed to send FCM token: ...
+  [PushNotificationService] Error syncing token to backend: ...
   ```
 
 **验证命令** (在后端运行):
@@ -122,17 +122,13 @@ user_id=1 fcm_token=test_fcm_token_12345
 **预期后端日志**:
 ```
 [SignalingHub] call invite received, preparing media connection
-[SignalingHub] call notification would be sent (Firebase SDK not yet configured)
-[SignalingHub] call notification sent successfully
+2026-XX-XX INF call notification sent component=fcm_manager from=user_a@example.com call_id=uuid-string message_id=projects/.../messages/...
 ```
 
 **如果启用了详细日志**:
 ```
-[FCMManager] sending call notification
-to_token=abc123def456...
-from_email=user_a@example.com
-call_id=uuid-string
-msg="call notification would be sent (Firebase SDK not yet configured)"
+2026-XX-XX INF fcm enabled component=fcm_manager credentials_path=/absolute/path/to/firebase-service-account.json
+2026-XX-XX INF call notification sent component=fcm_manager from=user_a@example.com call_id=uuid-string message_id=projects/.../messages/...
 ```
 
 ## 故障排除
@@ -149,8 +145,8 @@ msg="call notification would be sent (Firebase SDK not yet configured)"
 **排查步骤**:
 1. 检查移动端日志：
    ```
-   [AuthContext] Sending FCM token to backend...
-   [AuthContext] FCM token sent successfully/Failed to send FCM token
+   [AuthContext] Failed to send FCM token: ...
+   [PushNotificationService] Error syncing token to backend: ...
    ```
 
 2. 检查后端是否接收到请求：
@@ -220,7 +216,7 @@ msg="call notification would be sent (Firebase SDK not yet configured)"
    输入密码: password123
    点击登录
    ```
-   观察后端日志：`[AuthContext] FCM token sent successfully`
+   观察后端日志：`fcm token saved`
 
 2. **第二个模拟器/设备 - 用户 B 登录**
    ```
@@ -228,7 +224,7 @@ msg="call notification would be sent (Firebase SDK not yet configured)"
    输入密码: password123
    点击登录
    ```
-   观察后端日志：`[AuthContext] FCM token sent successfully`
+   观察后端日志：`fcm token saved`
 
 3. **验证数据库**
    ```bash
@@ -245,19 +241,16 @@ msg="call notification would be sent (Firebase SDK not yet configured)"
 
 5. **观察后端日志**
    ```
-   [SignalingHub] call invite received
-   [SignalingHub] sendCallNotification triggered
-   [SignalingHub] call notification would be sent
-   [SignalingHub] call notification sent successfully
+   2026-XX-XX INF call notification sent component=fcm_manager from=user_a@example.com call_id=uuid-string message_id=projects/.../messages/...
    ```
 
-## Firebase SDK 集成后的验证
+## Firebase 发送验证
 
-当集成 Firebase Admin SDK 后，以下日志表示推送通知已成功发送：
+当前实现已经直接使用 Firebase Admin SDK。启用后，以下日志表示推送通知已成功发送：
 
 ```
-[FCMManager] sending call notification
-to_token=fcm_token_xxx
+2026-XX-XX INF fcm enabled component=fcm_manager credentials_path=/absolute/path/to/firebase-service-account.json
+2026-XX-XX INF call notification sent component=fcm_manager from=user_a@example.com call_id=uuid-string message_id=projects/.../messages/...
 from_email=user_a@example.com
 call_id=uuid
 msg="call notification sent successfully"
