@@ -1,5 +1,7 @@
 # AllCallAll API 接口文档
 
+> 面试/作品集讲解优先使用 [Backend Portfolio API Surface](backend-portfolio-api.md)。本文保留为较完整的历史 API 参考。
+
 ## 📋 概述
 
 AllCallAll 提供了完整的 REST API 和 WebSocket 接口，用于支持实时音视频通信功能。
