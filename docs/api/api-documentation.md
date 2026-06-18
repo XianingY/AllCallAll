@@ -1,471 +1,187 @@
-# AllCallAll API 接口文档
-
-> 面试/作品集讲解优先使用 [Backend Portfolio API Surface](backend-portfolio-api.md)。本文保留为较完整的历史 API 参考。
-
-## 📋 概述
-
-AllCallAll 提供了完整的 REST API 和 WebSocket 接口，用于支持实时音视频通信功能。
-
-- **基础URL**: `http://localhost:8080` (开发环境)
-- **API版本**: v1
-- **认证方式**: JWT Bearer Token
-- **数据格式**: JSON
-- **WebSocket**: 支持实时信令传输
-
-## 🔐 认证
-
-除注册、登录、发送验证码外，所有 API 都需要在请求头中携带 JWT Token：
-
-```http
-Authorization: Bearer <your_jwt_token>
-```
-
-## 📡 REST API 接口
-
-### 1. 健康检查
-
-#### GET /api/v1/health
-
-检查服务状态。
-
-**响应示例**:
-```json
-{
-  "status": "ok"
-}
-```
-
-### 2. 用户认证
-
-#### POST /api/v1/auth/register
-
-用户注册。
-
-**请求体**:
-```json
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "display_name": "张三"
-}
-```
-
-**响应示例**:
-```json
-{
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "display_name": "张三"
-  },
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-#### POST /api/v1/auth/login
-
-用户登录。
-
-**请求体**:
-```json
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
-```
-
-**响应示例**:
-```json
-{
-  "user": {
-    "id": 1,
-    "email": "user@example.com",
-    "display_name": "张三"
-  },
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-#### POST /api/v1/auth/refresh
-
-刷新访问令牌。
-
-**请求体**:
-```json
-{
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-### 3. 邮件验证
-
-#### POST /api/v1/email/send-verification-code
-
-发送邮箱验证码。
-
-**请求体**:
-```json
-{
-  "email": "user@example.com"
-}
-```
-
-**响应示例**:
-```json
-{
-  "success": true,
-  "message": "验证码已发送"
-}
-```
-
-#### POST /api/v1/email/verify
-
-验证邮箱验证码。
-
-**请求体**:
-```json
-{
-  "email": "user@example.com",
-  "code": "123456"
-}
-```
-
-**响应示例**:
-```json
-{
-  "success": true,
-  "message": "验证成功"
-}
-```
-
-### 4. 用户管理
-
-#### GET /api/v1/users/profile
-
-获取当前用户信息。
-
-**响应示例**:
-```json
-{
-  "id": 1,
-  "email": "user@example.com",
-  "display_name": "张三",
-  "created_at": "2024-01-01T00:00:00Z"
-}
-```
-
-#### GET /api/v1/users/search
-
-搜索用户。
-
-**查询参数**:
-- `query`: 搜索关键词（邮箱或昵称）
-
-**响应示例**:
-```json
-{
-  "users": [
-    {
-      "id": 2,
-      "email": "user2@example.com",
-      "display_name": "李四"
-    }
-  ]
-}
-```
-
-#### GET /api/v1/users/contacts
-
-获取联系人列表。
-
-**响应示例**:
-```json
-{
-  "contacts": [
-    {
-      "id": 2,
-      "email": "user2@example.com",
-      "display_name": "李四",
-      "status": "online"
-    }
-  ]
-}
-```
-
-#### POST /api/v1/users/contacts
-
-添加联系人。
-
-**请求体**:
-```json
-{
-  "user_id": 2
-}
-```
-
-**响应示例**:
-```json
-{
-  "success": true,
-  "message": "联系人已添加"
-}
-```
-
-#### GET /api/v1/users/presence
-
-获取用户在线状态。
-
-**查询参数**:
-- `user_ids`: 用户ID列表（逗号分隔）
-
-**响应示例**:
-```json
-{
-  "users": [
-    {
-      "id": 2,
-      "status": "online",
-      "last_seen": "2024-01-01T12:00:00Z"
-    }
-  ]
-}
-```
-
-## 🔌 WebSocket 接口
-
-### WebSocket 端点
-
-**URL**: `ws://localhost:8080/api/v1/ws`
-
-**认证方式**:
-1. 在 URL 查询参数中携带 token: `ws://localhost:8080/api/v1/ws?token=<jwt_token>`
-2. 在连接建立后发送认证消息
-
-### 连接流程
-
-1. 建立 WebSocket 连接
-2. 发送认证消息（如果未在 URL 中携带 token）
-3. 开始交换信令消息
-
-### 认证消息格式
-
-```json
-{
-  "type": "auth",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-**响应**:
-```json
-{
-  "type": "auth_response",
-  "success": true,
-  "message": "认证成功"
-}
-```
-
-### 信令消息格式
-
-#### 1. 加入通话
-
-```json
-{
-  "type": "join_call",
-  "call_id": "call-123",
-  "direction": "incoming" // 或 "outgoing"
-}
-```
-
-#### 2. 离开通话
-
-```json
-{
-  "type": "leave_call",
-  "call_id": "call-123"
-}
-```
-
-#### 3. WebRTC Offer
-
-```json
-{
-  "type": "offer",
-  "call_id": "call-123",
-  "sdp": "v=0\r\no=-..."
-}
-```
-
-#### 4. WebRTC Answer
-
-```json
-{
-  "type": "answer",
-  "call_id": "call-123",
-  "sdp": "v=0\r\no=-..."
-}
-```
-
-#### 5. ICE Candidate
-
-```json
-{
-  "type": "ice_candidate",
-  "call_id": "call-123",
-  "candidate": {
-    "candidate": "candidate:0 1 UDP 2122252543 192.168.1.1 12345 typ host",
-    "sdpMLineIndex": 0,
-    "sdpMid": "0"
-  }
-}
-```
-
-#### 6. 媒体控制命令
-
-```json
-{
-  "type": "media_command",
-  "call_id": "call-123",
-  "command": "start_audio" // start_audio, stop_audio, start_video, stop_video
-}
-```
-
-### 消息响应
-
-服务器会返回以下类型的消息：
-
-#### 错误响应
-
-```json
-{
-  "type": "error",
-  "code": "INVALID_TOKEN",
-  "message": "无效的认证令牌"
-}
-```
-
-#### 状态通知
-
-```json
-{
-  "type": "call_state",
-  "call_id": "call-123",
-  "state": "connecting" // idle, connecting, in_call, ended
-}
-```
-
-#### 用户状态
-
-```json
-{
-  "type": "user_presence",
-  "user_id": 2,
-  "status": "online" // online, offline
-}
-```
-
-## 🔄 通话流程
-
-### 1. 发起呼叫流程
-
-```
-1. 用户A发起呼叫
-   ├─ WebSocket: 发送 join_call (outgoing)
-   ├─ WebRTC: 创建 PeerConnection
-   ├─ WebSocket: 发送 offer (包含SDP)
-   │
-2. 用户B接收呼叫
-   ├─ WebSocket: 接收 join_call (incoming)
-   ├─ WebRTC: 接收并处理 offer
-   ├─ WebSocket: 发送 answer (包含SDP)
-   │
-3. 建立连接
-   ├─ 交换 ICE candidates
-   ├─ 媒体流开始传输
-   ├─ 双方进入 in_call 状态
-```
-
-### 2. 媒体控制流程
-
-```
-开始音频:
-  ├─ 客户端: 启用麦克风
-  └─ WebSocket: 发送 media_command { command: "start_audio" }
-
-停止音频:
-  ├─ 客户端: 禁用麦克风
-  └─ WebSocket: 发送 media_command { command: "stop_audio" }
-```
-
-## 📊 状态码
-
-### HTTP 状态码
-
-- `200` - 请求成功
-- `201` - 创建成功
-- `400` - 请求参数错误
-- `401` - 未认证
-- `403` - 权限不足
-- `404` - 资源不存在
-- `409` - 冲突（如邮箱已存在）
-- `500` - 服务器内部错误
-
-### WebSocket 错误码
-
-- `INVALID_TOKEN` - 无效的认证令牌
-- `CALL_NOT_FOUND` - 通话不存在
-- `INVALID_MESSAGE` - 无效的消息格式
-- `PEER_NOT_FOUND` - 对端用户不存在
-- `ICE_SERVER_ERROR` - ICE 服务器错误
-
-## 🔒 安全注意事项
-
-1. **Token 保护**: 不要在客户端代码中暴露 JWT secret
-2. **HTTPS/WSS**: 生产环境必须使用 HTTPS/WSS
-3. **Token 过期**: 访问令牌默认 60 分钟过期，需要定期刷新
-4. **CORS**: 仅允许可信域名访问 API
-5. **Rate Limiting**: 建议对 API 接口实施限流
-
-## 🧪 测试工具
-
-### 使用 curl 测试 REST API
-
-```bash
-# 用户注册
-curl -X POST http://localhost:8080/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123","display_name":"测试用户"}'
-
-# 用户登录
-curl -X POST http://localhost:8080/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}'
-```
-
-### 使用 wscat 测试 WebSocket
-
-```bash
-# 安装 wscat
-npm install -g wscat
-
-# 连接 WebSocket
-wscat -c ws://localhost:8080/api/v1/ws?token=<your_jwt_token>
-
-# 发送消息
-> {"type":"join_call","call_id":"test-call","direction":"outgoing"}
-```
-
-## 📝 注意事项
-
-1. **连接保持**: WebSocket 连接会因网络问题断开，需要实现重连机制
-2. **消息顺序**: 消息需要按顺序处理，避免并发问题
-3. **错误处理**: 所有 API 都需要实现适当的错误处理
-4. **日志记录**: 重要操作需要记录日志以便调试
-5. **资源清理**: 通话结束后需要清理 WebRTC 资源
-
-## 🔗 相关文档
-
-- [配置说明](./configuration.md)
-- [数据库文档](./database.md)
-- [部署指南](./deployment-guide.md)
-- [安全指南](../configuration/security-guidelines.md)
+# AllCallAll API Documentation
+
+This is the maintained human-readable API map for the current codebase. Routes are registered from `backend/internal/server/routes.go` and `backend/internal/handlers/*`.
+
+## Conventions
+
+- Base URL: `http://localhost:8080` locally.
+- API prefix: `/api/v1`.
+- Protected endpoints use `Authorization: Bearer <access_token>`.
+- Collaboration endpoints use organization membership and often `X-Organization-ID`.
+- Error responses keep the legacy `error` field and add `code` plus `request_id` on hardened paths.
+- `/api/v1/chat/ws` is durable collaboration replay. `/api/v1/ws` and `/api/v1/signaling/*` are 1:1 signaling.
+
+## Health
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/v1/health` | Service health. |
+| `GET` | `/api/v1/metrics` | Prometheus-style counters when metrics are wired. |
+
+## Auth, Email, Users
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/v1/auth/register` | Register with verified email. |
+| `POST` | `/api/v1/auth/login` | Login and issue access/refresh credentials. |
+| `POST` | `/api/v1/auth/refresh` | Rotate refresh session and issue a new access token. |
+| `POST` | `/api/v1/auth/logout` | Revoke current refresh session. |
+| `POST` | `/api/v1/auth/logout-all` | Revoke all refresh sessions for current user. |
+| `GET` | `/api/v1/auth/sessions` | List current user's refresh sessions. |
+| `DELETE` | `/api/v1/auth/sessions/:sessionID` | Revoke one owned refresh session. |
+| `POST` | `/api/v1/auth/password-reset/send` | Send password-reset verification. |
+| `POST` | `/api/v1/auth/password-reset/confirm` | Reset password with verification. |
+| `POST` | `/api/v1/email/send-verification-code` | Send purpose-scoped code. |
+| `POST` | `/api/v1/email/verify-code` | Verify purpose-scoped code. |
+| `GET` | `/api/v1/users/me` | Current user profile. |
+| `GET` | `/api/v1/users/search` | User search with block/rate-limit checks. |
+| `GET` | `/api/v1/users/presence` | Presence lookup. |
+| `POST` | `/api/v1/users/change-password` | Change password. |
+| `POST` | `/api/v1/users/fcm-token` | Register push token. |
+
+## Contacts And Invitations
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/v1/users/contacts` | List contacts. |
+| `POST` | `/api/v1/users/contacts` | Add contact. |
+| `DELETE` | `/api/v1/users/contacts/:id` | Remove contact. |
+| `GET` | `/api/v1/users/contacts/:id/profile` | Read business contact profile. |
+| `PUT` | `/api/v1/users/contacts/:id/profile` | Upsert business contact profile. |
+| `GET` | `/api/v1/invitations/:code` | Read invitation details. |
+| `POST` | `/api/v1/invitations` | Create invitation. |
+| `POST` | `/api/v1/invitations/:code/accept` | Accept invitation. |
+
+## Organizations And Conversations
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/v1/organizations` | Create workspace. |
+| `GET` | `/api/v1/organizations` | List user's workspaces. |
+| `POST` | `/api/v1/organizations/:id/switch` | Switch active workspace. |
+| `POST` | `/api/v1/organizations/:id/invites` | Invite workspace member. |
+| `POST` | `/api/v1/organizations/invites/:code/accept` | Accept workspace invite. |
+| `GET` | `/api/v1/organizations/:id/policy` | Read recording policy. |
+| `PUT` | `/api/v1/organizations/:id/policy` | Update recording policy. |
+| `GET` | `/api/v1/conversations` | List collaboration threads. |
+| `POST` | `/api/v1/conversations` | Create direct/channel/meeting thread. |
+| `GET` | `/api/v1/conversations/:id` | Read conversation workspace detail. |
+| `PATCH` | `/api/v1/conversations/:id` | Update status, priority, assignee, contact binding. |
+| `GET` | `/api/v1/conversations/:id/messages` | Page messages. |
+| `POST` | `/api/v1/conversations/:id/messages` | Send text/system/call-event message. |
+| `POST` | `/api/v1/conversations/:id/read` | Mark conversation read. |
+| `GET` | `/api/v1/conversations/:id/notes` | List internal notes. |
+| `POST` | `/api/v1/conversations/:id/notes` | Create internal note. |
+| `POST` | `/api/v1/conversations/:id/rooms` | Create meeting room from thread. |
+| `GET` | `/api/v1/chat/ws` | Durable collaboration WebSocket with replay. |
+| `GET` | `/api/v1/search/messages?q=...` | Message search; ES-backed when configured. |
+
+Conversation detail includes Agent context metadata, including meeting transcription status/count when available.
+
+## Meetings, Signaling, Recording
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/v1/webrtc/config` | Return ICE/TURN config. |
+| `GET` | `/api/v1/ws` | 1:1 signaling WebSocket. |
+| `POST` | `/api/v1/signaling/send` | Polling signaling send fallback. |
+| `GET` | `/api/v1/signaling/poll` | Polling signaling receive fallback. |
+| `GET` | `/api/v1/translation/ws` | Realtime translation compatibility endpoint; UI currently hidden. |
+| `POST` | `/api/v1/rooms` | Create meeting room. |
+| `GET` | `/api/v1/rooms` | List rooms. |
+| `POST` | `/api/v1/rooms/:roomId/join` | Join room. |
+| `POST` | `/api/v1/rooms/:roomId/leave` | Leave room. |
+| `POST` | `/api/v1/rooms/:roomId/offer` | Submit WebRTC offer. |
+| `POST` | `/api/v1/rooms/:roomId/ice` | Submit ICE candidate. |
+| `POST` | `/api/v1/rooms/:roomId/media` | Patch audio/video/connection state. |
+| `GET` | `/api/v1/rooms/:roomId/state` | Read room snapshot. |
+| `POST` | `/api/v1/rooms/:roomId/recording/start` | Start recording if policy allows. |
+| `POST` | `/api/v1/rooms/:roomId/recording/stop` | Stop recording and persist artifacts. |
+| `GET` | `/api/v1/recordings` | List accessible recordings. |
+| `GET` | `/api/v1/recordings/:id` | Read recording detail and transcription status. |
+| `GET` | `/api/v1/recordings/:id/files/:fileId` | Download local file or redirect to signed URL. |
+
+When transcription is enabled, recording stop enqueues `recording.transcription.requested`. The outbox worker writes `meeting_transcript_segments`; failures do not roll back recording persistence.
+
+## AI Agent, Workflow, Knowledge
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/v1/agent/runs` | Create auditable ReAct-style conversation Agent run. |
+| `GET` | `/api/v1/agent/runs/:id` | Read run, steps, tool calls, trace. |
+| `GET` | `/api/v1/agent/runs/:id/events` | Poll persisted run event timeline. |
+| `GET` | `/api/v1/agent/runs/:id/events/stream` | SSE stream backed by persisted rows. |
+| `POST` | `/api/v1/agent/runs/:id/submit-tool-outputs` | Submit tool outputs when required. |
+| `POST` | `/api/v1/agent/workflows` | Create workflow/DAG Agent run. |
+| `GET` | `/api/v1/agent/workflows` | List workflow runs. |
+| `GET` | `/api/v1/agent/workflows/:id` | Read workflow run graph/state. |
+| `POST` | `/api/v1/agent/workflows/:id/process` | Process workflow run. |
+| `GET` | `/api/v1/agent/approvals` | List human approvals. |
+| `POST` | `/api/v1/agent/approvals/:id/decision` | Approve or reject tool action. |
+| `POST` | `/api/v1/knowledge/sources` | Create/import knowledge source. |
+| `GET` | `/api/v1/knowledge/sources` | List knowledge sources. |
+| `GET` | `/api/v1/knowledge/sources/:id` | Read source detail. |
+| `POST` | `/api/v1/knowledge/sources/:id/reingest` | Re-run source ingestion. |
+| `GET` | `/api/v1/knowledge/source-groups` | List duplicate/version groups. |
+| `GET` | `/api/v1/knowledge/source-groups/:id` | Read source group. |
+| `POST` | `/api/v1/knowledge/source-groups/:id/canonical` | Set canonical version. |
+| `GET` | `/api/v1/knowledge/duplicate-candidates` | List duplicate candidates. |
+| `POST` | `/api/v1/knowledge/duplicate-candidates/:id/decision` | Accept/reject duplicate candidate. |
+| `GET` | `/api/v1/knowledge/dead-letters` | List failed ingestion jobs. |
+| `POST` | `/api/v1/knowledge/dead-letters/:id/retry` | Retry failed ingestion. |
+
+The Agent loads messages, notes, memories, contact profile, call follow-ups, 1:1 transcript segments, and meeting recording transcript segments. Retrieved references distinguish `meeting_transcript` from older `call_transcript` sources.
+
+## CRM-Lite, Follow-Ups, Commercial Support
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/v1/pipelines` | List pipelines. |
+| `GET` | `/api/v1/deals` | List deals. |
+| `POST` | `/api/v1/deals` | Create deal. |
+| `GET` | `/api/v1/deals/:id` | Read deal. |
+| `PATCH` | `/api/v1/deals/:id` | Update deal. |
+| `POST` | `/api/v1/deals/:id/contacts` | Attach contact. |
+| `GET` | `/api/v1/deals/:id/activities` | List deal activities. |
+| `GET` | `/api/v1/calls/history` | 1:1 call history. |
+| `GET` | `/api/v1/calls/:callId/followup` | Read follow-up summary. |
+| `POST` | `/api/v1/calls/:callId/followup/generate` | Generate follow-up. |
+| `POST` | `/api/v1/calls/:callId/followup/regenerate` | Regenerate follow-up. |
+| `GET` | `/api/v1/follow-ups` | List tasks. |
+| `POST` | `/api/v1/follow-ups` | Create task. |
+| `PATCH` | `/api/v1/follow-ups/:taskId` | Update task. |
+| `GET` | `/api/v1/entitlements/me` | Entitlement snapshot. |
+| `GET` | `/api/v1/usage/me` | Usage/quota snapshot. |
+| `POST` | `/api/v1/billing/revenuecat/webhook` | RevenueCat webhook. |
+
+## Safety, Legal, Support
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/legal/terms` | Public terms page. |
+| `GET` | `/legal/privacy` | Public privacy page. |
+| `GET` | `/legal/delete-account` | Public deletion page. |
+| `GET` | `/invite/:code` | Public invite landing page. |
+| `GET` | `/api/v1/legal/current` | Current legal versions. |
+| `POST` | `/api/v1/legal/accept` | Record acceptance. |
+| `POST` | `/api/v1/users/blocks` | Block user. |
+| `GET` | `/api/v1/users/blocks` | List blocks. |
+| `DELETE` | `/api/v1/users/blocks/:blockedUserId` | Remove block. |
+| `POST` | `/api/v1/users/reports` | Create report. |
+| `POST` | `/api/v1/users/me/deletion` | Request account deletion. |
+| `GET` | `/api/v1/internal/support/reports` | Support report list. |
+| `GET` | `/api/v1/internal/support/users/:userId/summary` | Support user summary. |
+| `POST` | `/api/v1/internal/support/users/:userId/sessions/revoke-all` | Revoke all sessions. |
+| `DELETE` | `/api/v1/internal/support/users/:userId/sessions/:sessionId` | Revoke one session. |
+| `GET` | `/api/v1/internal/support/calls/:callId` | Support call detail. |
+| `GET` | `/api/v1/internal/support/rooms/:roomId` | Support room detail. |
+| `GET` | `/api/v1/internal/support/recordings/:id` | Support recording detail. |
+
+## Worker Boundaries
+
+- `cmd/user-service`: gRPC token validation and user lookup.
+- `cmd/agent-worker`: `agent.run.requested` and workflow processing.
+- `cmd/outbox-worker`: collaboration events, knowledge ingest/chunk index, recording transcription, optional Kafka bridge.
+- `cmd/data-worker`: Kafka settlement consumer.
+- `cmd/search-worker`: Elasticsearch indexing from outbox events.
+- `cmd/cleanup-worker`: refresh sessions and recording retention.
