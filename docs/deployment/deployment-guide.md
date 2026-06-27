@@ -37,6 +37,18 @@ docker compose -f infra/docker-compose.yml \
 
 This topology demonstrates gRPC auth validation, Kafka-compatible settlement, Elasticsearch search, and standalone workers. Kubernetes is intentionally not implemented.
 
+### 4. Single-node Beta Stack
+
+The maintained Beta shape serves the Expo Web export and API through TLS Nginx, runs a one-shot schema migration, persists MySQL/Redis/recordings, and exposes Coturn:
+
+```bash
+docker compose --env-file .env -f infra/docker-compose.production.yml config
+docker compose --env-file .env -f infra/docker-compose.production.yml up -d --build
+curl --cacert infra/ssl/fullchain.pem https://localhost/api/v1/ready
+```
+
+Provide `infra/ssl/fullchain.pem` and `infra/ssl/privkey.pem`. Set `TURN_HOST`, `TURN_REALM`, `TURN_USERNAME`, and `TURN_PASSWORD` to public values reachable by clients. This topology is intentionally limited to one media node and rooms of at most six participants.
+
 ## Runtime Components
 
 | Component | Entrypoint | Responsibility |
@@ -90,7 +102,12 @@ Recording and transcription:
 RECORDING_STORAGE_DRIVER=local
 RECORDING_STORAGE_DIR=/tmp/allcallall-recordings
 TRANSCRIPTION_ENABLED=true
-TRANSCRIPTION_PROVIDER=mock
+TRANSCRIPTION_PROVIDER=openai_compatible
+TRANSCRIPTION_OPENAI_BASE_URL=https://api.example.com/v1
+TRANSCRIPTION_OPENAI_MODEL=whisper-1
+TRANSCRIPTION_OPENAI_API_KEY=...
+TRANSCRIPTION_CHUNK_SECONDS=600
+TRANSCRIPTION_MAX_UPLOAD_BYTES=25165824
 ```
 
 S3-compatible recording storage:
@@ -129,6 +146,9 @@ ELASTICSEARCH_INDEX=allcallall_messages
 - Recording download paths are always authorized through the backend.
 - FCM, S3, Kafka, Elasticsearch, SMTP, and JWT secrets are never logged.
 - Optional Kafka/Elasticsearch demos are either verified or clearly marked disabled.
+- `docker compose ... run --rm migrate` succeeds before the API is started; `DB_AUTO_MIGRATE=0` in Beta/production.
+- `/api/v1/health` reports process liveness and `/api/v1/ready` reports MySQL/Redis readiness.
+- `AGENT_PROVIDER_STRICT=true` and a real transcription provider are configured; mock/rules output is not presented as Beta output.
 
 ## Web / Android / Desktop Checks
 
@@ -150,6 +170,18 @@ Manual smoke:
 ## Scope Boundaries
 
 - Kubernetes is out of scope.
-- Real ASR provider integration is future work.
-- S3 recording transcription reads are future work; v1 transcription requires local file readability.
+- The Beta supports OpenAI-compatible recording transcription and local/S3 recording reads. Real provider smoke tests require externally supplied credentials.
 - Web billing and Web push are intentionally not implemented.
+
+## Backup And Restore
+
+MySQL:
+
+```bash
+docker compose --env-file .env -f infra/docker-compose.production.yml exec -T mysql \
+  mysqldump -uallcallall -p"$MYSQL_PASSWORD" --single-transaction allcallall_db > allcallall.sql
+cat allcallall.sql | docker compose --env-file .env -f infra/docker-compose.production.yml exec -T mysql \
+  mysql -uallcallall -p"$MYSQL_PASSWORD" allcallall_db
+```
+
+Local recordings are stored in the `recording_data` volume. Stop the backend before archiving or restoring that volume so files and database metadata remain consistent. For S3, use bucket versioning and the object-store provider's replication/backup policy. Redis contains transient realtime/cache state; persist its volume for operational continuity, but restore MySQL and recordings as the authoritative data pair.
