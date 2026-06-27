@@ -149,6 +149,8 @@ ELASTICSEARCH_INDEX=allcallall_messages
 - `docker compose ... run --rm migrate` succeeds before the API is started; `DB_AUTO_MIGRATE=0` in Beta/production.
 - `/api/v1/health` reports process liveness and `/api/v1/ready` reports MySQL/Redis readiness.
 - `AGENT_PROVIDER_STRICT=true` and a real transcription provider are configured; mock/rules output is not presented as Beta output.
+- Support endpoints require both `SUPPORT_API_TOKEN` and an internal source network; expose them through a VPN/admin network, not the public edge.
+- Web access tokens remain in memory; browser session recovery relies on the Secure, HttpOnly refresh cookie.
 
 ## Web / Android / Desktop Checks
 
@@ -185,3 +187,28 @@ cat allcallall.sql | docker compose --env-file .env -f infra/docker-compose.prod
 ```
 
 Local recordings are stored in the `recording_data` volume. Stop the backend before archiving or restoring that volume so files and database metadata remain consistent. For S3, use bucket versioning and the object-store provider's replication/backup policy. Redis contains transient realtime/cache state; persist its volume for operational continuity, but restore MySQL and recordings as the authoritative data pair.
+
+## Security And Observability
+
+The API and TLS edge emit CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, and frame-deny headers. Knowledge URL ingestion validates every redirect target to block redirects into loopback, private, link-local, or multicast networks. Experimental E2EE remains disabled because the current React Native WebRTC runtime does not encrypt media frames with the exchanged application key.
+
+`GET /api/v1/metrics` includes:
+
+- ASR status, provider failure class, audio seconds/files, segment count, and processing duration sum/count.
+- Agent run status, provider failures, run duration sum/count, and approval wait sum/count.
+- Outbox publish/retry/failure counters and the current `outbox_backlog` gauge sampled by each worker poll.
+
+Request IDs propagate into outbox events and trace spans. Recording, transcription, and Agent records retain their domain IDs so an incident can be followed across logs and persisted run history.
+
+## CI And Protected E2E
+
+Default CI runs unit tests, `go vet`, targeted `go test -race`, Web export/smoke, and MySQL/Redis/MinIO/Elasticsearch dependency checks. A protected two-context Playwright smoke runs against a deployed Beta only when these repository secrets are configured:
+
+```text
+BETA_E2E_BASE_URL
+BETA_E2E_USER_ONE / BETA_E2E_PASSWORD_ONE
+BETA_E2E_USER_TWO / BETA_E2E_PASSWORD_TWO
+BETA_E2E_ROOM_ID
+```
+
+Real ASR and end-to-end recording quality remain protected-environment tests because they require provider credentials, browser media permissions, and routable TURN/TLS endpoints.
