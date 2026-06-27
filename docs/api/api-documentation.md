@@ -99,6 +99,8 @@ Conversation detail includes Agent context metadata, including meeting transcrip
 | `POST` | `/api/v1/rooms/:roomId/recording/stop` | Stop recording and persist artifacts. |
 | `GET` | `/api/v1/recordings` | List accessible recordings. |
 | `GET` | `/api/v1/recordings/:id` | Read recording detail and transcription status. |
+| `GET` | `/api/v1/recordings/:id/transcript` | Page through meeting transcript segments with `after_id` and `limit`. |
+| `POST` | `/api/v1/recordings/:id/transcription/retry` | Owner/admin retry for a failed transcription. |
 | `GET` | `/api/v1/recordings/:id/files/:fileId` | Download local file or redirect to signed URL. |
 
 When transcription is enabled, recording stop enqueues `recording.transcription.requested`. The outbox worker writes `meeting_transcript_segments`; failures do not roll back recording persistence.
