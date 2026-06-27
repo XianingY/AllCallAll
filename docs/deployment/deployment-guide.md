@@ -39,7 +39,7 @@ This topology demonstrates gRPC auth validation, Kafka-compatible settlement, El
 
 ### 4. Single-node Beta Stack
 
-The maintained Beta shape serves the Expo Web export and API through TLS Nginx, runs a one-shot schema migration, persists MySQL/Redis/recordings, and exposes Coturn:
+The maintained Beta shape serves the independent `web/dist` bundle and API through TLS Nginx, runs a one-shot schema migration, persists MySQL/Redis/recordings, and exposes Coturn:
 
 ```bash
 docker compose --env-file .env -f infra/docker-compose.production.yml config
@@ -134,6 +134,20 @@ ELASTICSEARCH_URL=http://elasticsearch:9200
 ELASTICSEARCH_INDEX=allcallall_messages
 ```
 
+Web runtime config:
+
+```bash
+PUBLIC_API_BASE_URL=/api/v1
+PUBLIC_WS_BASE_URL=
+FIREBASE_API_KEY=...
+FIREBASE_AUTH_DOMAIN=...
+FIREBASE_PROJECT_ID=...
+FIREBASE_MESSAGING_SENDER_ID=...
+FIREBASE_APP_ID=...
+FIREBASE_VAPID_KEY=...
+REVENUECAT_PUBLIC_API_KEY=...
+```
+
 ## Deployment Checklist
 
 - Build succeeds: `cd backend && go build ./...`.
@@ -155,8 +169,8 @@ ELASTICSEARCH_INDEX=allcallall_messages
 ## Web / Android / Desktop Checks
 
 ```bash
+cd web && npm run typecheck && npm run lint && npm test && npm run build && npx playwright test
 cd mobile && npm run test:unit && npx tsc --noEmit && npm run lint
-cd mobile && npx expo export --platform web
 cd desktop && npm run check && npm run build
 ```
 
@@ -173,7 +187,7 @@ Manual smoke:
 
 - Kubernetes is out of scope.
 - The Beta supports OpenAI-compatible recording transcription and local/S3 recording reads. Real provider smoke tests require externally supplied credentials.
-- Web billing and Web push are intentionally not implemented.
+- Web billing and Web Push are implemented in the primary Web app, but require RevenueCat/Firebase public config plus backend FCM service-account config.
 
 ## Backup And Restore
 
@@ -202,7 +216,7 @@ Request IDs propagate into outbox events and trace spans. Recording, transcripti
 
 ## CI And Protected E2E
 
-Default CI runs unit tests, `go vet`, targeted `go test -race`, Web export/smoke, and MySQL/Redis/MinIO/Elasticsearch dependency checks. A protected two-context Playwright smoke runs against a deployed Beta only when these repository secrets are configured:
+Default CI runs backend tests, `go vet`, targeted `go test -race`, Web type/lint/unit/build/Playwright, mobile native checks, desktop checks, and MySQL/Redis/MinIO/Elasticsearch dependency checks. A protected Web smoke can run against a deployed Beta only when these repository secrets are configured:
 
 ```text
 BETA_E2E_BASE_URL
