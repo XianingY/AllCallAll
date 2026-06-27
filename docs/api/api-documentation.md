@@ -16,6 +16,7 @@ This is the maintained human-readable API map for the current codebase. Routes a
 | Method | Path | Purpose |
 | --- | --- | --- |
 | `GET` | `/api/v1/health` | Service health. |
+| `GET` | `/api/v1/ready` | Readiness check for MySQL, Redis, and required provider configuration. |
 | `GET` | `/api/v1/metrics` | Prometheus-style counters when metrics are wired. |
 
 ## Auth, Email, Users
@@ -38,6 +39,14 @@ This is the maintained human-readable API map for the current codebase. Routes a
 | `GET` | `/api/v1/users/presence` | Presence lookup. |
 | `POST` | `/api/v1/users/change-password` | Change password. |
 | `POST` | `/api/v1/users/fcm-token` | Register push token. |
+
+## Push Devices
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/v1/push/devices` | List current user's registered browser/mobile push devices. |
+| `POST` | `/api/v1/push/devices` | Register or refresh a push device token. |
+| `DELETE` | `/api/v1/push/devices/:deviceId` | Remove a push device registration. |
 
 ## Contacts And Invitations
 
@@ -83,6 +92,7 @@ Conversation detail includes Agent context metadata, including meeting transcrip
 | Method | Path | Purpose |
 | --- | --- | --- |
 | `GET` | `/api/v1/webrtc/config` | Return ICE/TURN config. |
+| `POST` | `/api/v1/realtime/tickets` | Issue a short-lived browser WebSocket ticket for `chat` or `signaling`. |
 | `GET` | `/api/v1/ws` | 1:1 signaling WebSocket. |
 | `POST` | `/api/v1/signaling/send` | Polling signaling send fallback. |
 | `GET` | `/api/v1/signaling/poll` | Polling signaling receive fallback. |
