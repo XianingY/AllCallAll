@@ -166,6 +166,8 @@ REVENUECAT_PUBLIC_API_KEY=...
 - Support endpoints require both `SUPPORT_API_TOKEN` and an internal source network; expose them through a VPN/admin network, not the public edge.
 - Web access tokens remain in memory; browser session recovery relies on the Secure, HttpOnly refresh cookie.
 
+For the product-level 3-6 person validation path, use the [Beta Smoke Checklist](../testing/beta-smoke-checklist.md).
+
 ## Web / Android / Desktop Checks
 
 ```bash
@@ -182,6 +184,14 @@ Manual smoke:
 - Start/stop a recording.
 - Check recording card status: processing, ready, failed, or no transcript.
 - Run an Agent on the conversation and verify meeting transcript context is available when transcription succeeded.
+
+Local seed-data walkthrough:
+
+```bash
+make beta-seed
+```
+
+This creates a small owner/member workspace with sample chat, organization admin data, an ended meeting, and ready transcript segments. It is for UI and Agent grounding walkthroughs; it does not replace real ASR, real browser media, or TURN/TLS validation.
 
 ## Scope Boundaries
 
