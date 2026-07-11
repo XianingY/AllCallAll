@@ -1,6 +1,8 @@
 # Deployment Guide
 
-This guide describes the deployable shapes that exist today. AllCallAll is maintained as a backend/AI Agent portfolio project, so the goal is reproducible local/staging infrastructure rather than a full commercial production platform.
+企业 Agent 平台的 Kubernetes、gVisor、NetworkPolicy、外部 MySQL/Redis/OpenBao 和 feature flag 发布流程见 [Agent 平台 Kubernetes 部署](./agent-platform-kubernetes.md)。
+
+This guide describes the local and staging deployment shapes. Production Agent platform deployments use the Kubernetes chart and operational controls documented above.
 
 ## Supported Topologies
 
