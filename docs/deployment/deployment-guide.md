@@ -136,6 +136,13 @@ ELASTICSEARCH_URL=http://elasticsearch:9200
 ELASTICSEARCH_INDEX=allcallall_messages
 ```
 
+The maintained local Elasticsearch image is built from
+`infra/elasticsearch/Dockerfile` and checksum-pins the IK plugin version to the
+Elasticsearch version. Text fields use `ik_max_word` at index time and
+`ik_smart` at query time. Reindex indices created by older images before
+rolling out this mapping; startup fails closed when an existing mapping does
+not declare the expected analyzers.
+
 Web runtime config:
 
 ```bash
