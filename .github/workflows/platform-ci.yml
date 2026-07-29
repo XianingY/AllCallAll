@@ -30,7 +30,7 @@ jobs:
           repository: XianingY/allcallall-agent-runtime
           path: allcallall-agent-runtime
           ref: main
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -81,7 +81,7 @@ jobs:
         with:
           go-version: "1.24.x"
           cache-dependency-path: backend/go.sum
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -150,7 +150,7 @@ jobs:
           ./internal/sandboxsupervisor
           ./cmd/sandbox-service
           ./cmd/sandbox-supervisor
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
