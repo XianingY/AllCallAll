@@ -25,7 +25,7 @@
     "@noble/hashes": "^1.8.0",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-firebase/app": "^23.8.6",
-    "@react-native-firebase/messaging": "^23.8.6",
+    "@react-native-firebase/messaging": "^26.3.2",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
     "axios": "^1.18.1",
