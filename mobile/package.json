@@ -54,7 +54,7 @@
     "react-native-sse": "^1.2.1",
     "react-native-web": "~0.19.10",
     "react-native-webrtc": "^124.0.0",
-    "zustand": "^5.0.10"
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
