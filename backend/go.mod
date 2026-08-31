@@ -40,8 +40,8 @@ require (
 	gopkg.in/mail.v2 v2.3.1
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/mysql v1.5.4
-	gorm.io/driver/sqlite v1.5.7
-	gorm.io/gorm v1.25.8
+	gorm.io/driver/sqlite v1.6.0
+	gorm.io/gorm v1.30.0
 	k8s.io/api v0.33.5
 	k8s.io/apimachinery v0.33.5
 	k8s.io/client-go v0.33.5
