@@ -28,7 +28,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@xyflow/react": "^12.10.1",
     "clsx": "^2.1.1",
-    "firebase": "^12.15.0",
+    "firebase": "^12.18.0",
     "i18next": "^25.8.13",
     "lucide-react": "^0.468.0",
     "openapi-fetch": "^0.15.0",
