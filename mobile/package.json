@@ -21,7 +21,7 @@
   "dependencies": {
     "@allcallall/api-types": "*",
     "@expo/metro-runtime": "~3.2.3",
-    "@noble/curves": "^1.9.7",
+    "@noble/curves": "^2.4.0",
     "@noble/hashes": "^1.8.0",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-firebase/app": "^23.8.6",
