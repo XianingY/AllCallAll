@@ -20,7 +20,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/ledongthuc/pdf v0.0.0-20250511090121-5959a4027728
 	github.com/pion/interceptor v0.1.37
-	github.com/pion/rtcp v1.2.14
+	github.com/pion/rtcp v1.2.17
 	github.com/pion/rtp v1.8.9
 	github.com/pion/webrtc/v4 v4.0.0
 	github.com/prometheus/client_golang v1.23.2
